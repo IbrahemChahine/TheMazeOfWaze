@@ -1,7 +1,13 @@
 package algorithms;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.List;
 
+import dataStructure.DGraph;
 import dataStructure.graph;
 import dataStructure.node_data;
 /**
@@ -11,10 +17,15 @@ import dataStructure.node_data;
  *
  */
 public class Graph_Algo implements graph_algorithms{
+	private DGraph Graph;
+	
 	@Override
 	public void init(graph g) {
-		// TODO Auto-generated method stub
-		
+		this.Graph = (DGraph) g;
+	}
+	@Override
+	public graph copy() {
+		return (graph) deepCopy(this);
 	}
 	@Override
 	public void init(String file_name) {
@@ -46,9 +57,23 @@ public class Graph_Algo implements graph_algorithms{
 		// TODO Auto-generated method stub
 		return null;
 	}
-	@Override
-	public graph copy() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+
+/**
+ * Makes a deep copy of any Java object that is passed.
+ */
+ private static Object deepCopy(Object object) {
+   try {
+     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+     ObjectOutputStream outputStrm = new ObjectOutputStream(outputStream);
+     outputStrm.writeObject(object);
+     ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
+     ObjectInputStream objInputStream = new ObjectInputStream(inputStream);
+     return objInputStream.readObject();
+   }
+   catch (Exception e) {
+     e.printStackTrace();
+     return null;
+   }
+ }
+	
 }
