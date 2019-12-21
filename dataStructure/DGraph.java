@@ -10,6 +10,16 @@ public class DGraph implements graph{
 	private HashMap<Integer, HashMap<Integer,Edge_Data>> Edges;
 	private int EdgeCount;
 	private int MC;
+	public DGraph() {
+		this.Nodes = new HashMap<Integer, Node_Data>();
+		this.Edges = new HashMap<Integer, HashMap<Integer,Edge_Data>>();
+		this.EdgeCount = 0;
+		this.MC = 0;
+	}
+	public DGraph(HashMap<Integer, Node_Data> nodes, HashMap<Integer, HashMap<Integer,Edge_Data>> edges) {
+		this.Nodes = nodes;
+		this.Edges = edges;
+	}
 	@Override
 	public node_data getNode(int key) {
 		if(!Nodes.containsKey(key)) {
@@ -29,8 +39,10 @@ public class DGraph implements graph{
 	}
 	@Override
 	public void addNode(node_data n) {
-		Nodes.put(n.getKey(), (Node_Data) n);
-		MC++;
+		this.Nodes.put(n.getKey(), (Node_Data) n);
+		HashMap<Integer,Edge_Data> edge = new HashMap<Integer,Edge_Data>();
+		this.Edges.put(n.getKey(), edge);
+		this.MC++;
 	}
 	@Override
 	public void connect(int src, int dest, double w) {
@@ -57,13 +69,18 @@ public class DGraph implements graph{
 		HashMap<Integer, Node_Data> shallowCopy = (HashMap<Integer, Node_Data>) this.Nodes.clone();
 		return (Collection<node_data>) shallowCopy;
 	}
-	/*
-	 * not done.
-	 */
+	public HashMap<Integer, Node_Data> getNodes() {
+		HashMap<Integer, Node_Data> Copy = (HashMap<Integer, Node_Data>) this.Nodes;
+		return Copy;
+	}
 	@Override
 	public Collection<edge_data> getE(int node_id) {
 		HashMap<Integer, Edge_Data> shallowCopy = (HashMap<Integer ,Edge_Data>) this.Edges.get(node_id).clone();
 		return (Collection<edge_data>) shallowCopy;
+	}
+	public HashMap<Integer, Edge_Data> getEdge(int node_id) {
+		HashMap<Integer, Edge_Data> Copy = (HashMap<Integer ,Edge_Data>) this.Edges.get(node_id);
+		return Copy;
 	}
 	@Override
 	public node_data removeNode(int key) {
