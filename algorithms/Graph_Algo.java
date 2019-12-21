@@ -66,37 +66,45 @@ public class Graph_Algo implements graph_algorithms{
 	}
 	/**
 	 * DFS
-	 * not done
+	 * not done.
 	 */
-	public static void DFS(DGraph g, int v, ArrayList<Boolean> visited) {
-		visited.add(v,true);
+	public static void DFS(DGraph g, int v, HashMap<Integer,Boolean> visited) {
+		if(visited.containsKey(v)) {
+			visited.replace(v, true);
+		}
+		else {
+			visited.put(v,true);
+		}
 		Set<Integer> KeySet;
-		if(!(g.getEdge(v).keySet() == null)) {
-			KeySet = g.getEdge(v).keySet();
-			for(int u: KeySet) {
-				DFS(g,u,visited);
-			}
+		KeySet = g.getEdge(v).keySet();
+		for(int u: KeySet) {
+			DFS(g,u,visited);
 		}
 	}
 	public static boolean check(DGraph graph, int N)
 	{
 		// stores vertex is visited or not
-		ArrayList<Boolean> visited = new ArrayList<>();
-
+		HashMap<Integer,Boolean> visited = new HashMap<Integer,Boolean>();
+		for (int i : graph.getNodes().keySet()) {
+			visited.put(i, false);
+		}
 		// choose random starting point
 		Set<Integer> NodeList = graph.getNodes().keySet();
-		int v = 0;
+		Object[] arr = NodeList.toArray();
+		int v = (int) arr[0];
 		// run a DFS starting at v
 		DFS(graph, v, visited);
 
 		// If DFS traversal doesn’t visit all vertices,
 		// then graph is not strongly connected
-		for (boolean b: visited)
-			if (!b)
+		Set<Integer> KeySet;
+		KeySet = visited.keySet();
+		for (int b: KeySet)
+			if (!visited.get(b))
 				return false;
 	
 		for (int i : graph.getNodes().keySet()) {
-			visited.add(i, false);
+			visited.put(i, false);
 		}
 		HashMap<Integer, HashMap<Integer, Edge_Data>> edges = new HashMap<Integer, HashMap<Integer, Edge_Data>>();
 		for(int u : NodeList) {
@@ -113,8 +121,10 @@ public class Graph_Algo implements graph_algorithms{
 
 		// If DFS traversal doesn’t visit all vertices,
 		// then graph is not strongly connected
-		for (boolean b: visited)
-			if (!b)
+		Set<Integer> KeySet2;
+		KeySet2 = visited.keySet();
+		for (int b: KeySet2)
+			if (!visited.get(b))
 				return false;
 
 		// if graph "passes" both DFSs, it is strongly connected
