@@ -7,11 +7,9 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-
-import com.sun.corba.se.impl.oa.poa.ActiveObjectMap.Key;
-
 import dataStructure.DGraph;
 import dataStructure.Edge_Data;
 import dataStructure.graph;
@@ -47,7 +45,7 @@ public class Graph_Algo implements graph_algorithms{
 	}
 	@Override
 	public boolean isConnected() {
-		return check(Graph,this.Graph.getNodes().size());
+		return check(Graph);
 	}
 	@Override
 	public double shortestPathDist(int src, int dest) {
@@ -75,23 +73,25 @@ public class Graph_Algo implements graph_algorithms{
 		else {
 			visited.put(v,true);
 		}
-		Set<Integer> KeySet;
-		KeySet = g.getEdge(v).keySet();
-		for(int u: KeySet) {
-			DFS(g,u,visited);
+		ArrayList<Node_Data> Neighbors = g.getNodes().get(v).getNeighbors();
+		for(Node_Data u : Neighbors) {
+			boolean bool = visited.get(u.getKey());
+			if(!bool) {
+				DFS(g,u.getKey(),visited);
+			}
 		}
 	}
-	public static boolean check(DGraph graph, int N)
+	public static boolean check(DGraph graph)
 	{
 		// stores vertex is visited or not
 		HashMap<Integer,Boolean> visited = new HashMap<Integer,Boolean>();
 		for (int i : graph.getNodes().keySet()) {
 			visited.put(i, false);
-		}
-		// choose random starting point
+		}// choose random starting point
 		Set<Integer> NodeList = graph.getNodes().keySet();
 		Object[] arr = NodeList.toArray();
 		int v = (int) arr[0];
+		
 		// run a DFS starting at v
 		DFS(graph, v, visited);
 
