@@ -78,55 +78,68 @@ public class Graph_Algo implements graph_algorithms{
 			}
 		}
 	}
-	public static boolean check(DGraph graph)
-	{
-		// stores vertex is visited or not
-		HashMap<Integer,Boolean> visited = new HashMap<Integer,Boolean>();
-		for (int i : graph.getNodes().keySet()) {
-			visited.put(i, false);
-		}// choose random starting point
-		Set<Integer> NodeList = graph.getNodes().keySet();
-		Object[] arr = NodeList.toArray();
-		int v = (int) arr[0];
-		
-		// run a DFS starting at v
-		DFS(graph, v, visited);
-
-		// If DFS traversal doesn’t visit all vertices,
-		// then graph is not strongly connected
-		Set<Integer> KeySet;
-		KeySet = visited.keySet();
-		for (int b: KeySet)
-			if (!visited.get(b))
-				return false;
-	
-		for (int i : graph.getNodes().keySet()) {
-			visited.put(i, false);
-		}
-		HashMap<Integer, HashMap<Integer, Edge_Data>> edges = new HashMap<Integer, HashMap<Integer, Edge_Data>>();
-		for(int u : NodeList) {
-			Set<Integer> EdgeList = graph.getEdge(u).keySet();
-			for (int z : EdgeList) {
-				HashMap<Integer, Edge_Data> value = new HashMap<Integer, Edge_Data>();
-				value.put(u,(Edge_Data) graph.getEdge(z, u));
-				edges.put(u, value);
+	public static boolean check(DGraph graph) {
+		for(int v : graph.getNodes().keySet()) {
+			HashMap<Integer,Boolean> visited = new HashMap<Integer,Boolean>();
+			for (int i : graph.getNodes().keySet()) {
+				visited.put(i, false);
 			}
+			DFS(graph, v, visited);
+			for (int b: visited.keySet())
+				if (!visited.get(b))
+					return false;
 		}
-		DGraph gr = new DGraph(graph.getNodes(),edges);
-		// Again run a DFS starting at v
-		DFS(gr, v, visited);
-
-		// If DFS traversal doesn’t visit all vertices,
-		// then graph is not strongly connected
-		Set<Integer> KeySet2;
-		KeySet2 = visited.keySet();
-		for (int b: KeySet2)
-			if (!visited.get(b))
-				return false;
-
-		// if graph "passes" both DFSs, it is strongly connected
 		return true;
 	}
+//	public static boolean check(DGraph graph)
+//	{
+//		// stores vertex is visited or not
+//		HashMap<Integer,Boolean> visited = new HashMap<Integer,Boolean>();
+//		for (int i : graph.getNodes().keySet()) {
+//			visited.put(i, false);
+//		}// choose random starting point
+//		Set<Integer> NodeList = graph.getNodes().keySet();
+//		Object[] arr = NodeList.toArray();
+//		int v = (int) arr[0];
+//		
+//		// run a DFS starting at v
+//		DFS(graph, v, visited);
+//
+//		// If DFS traversal doesn’t visit all vertices,
+//		// then graph is not strongly connected
+//		Set<Integer> KeySet;
+//		KeySet = visited.keySet();
+//		for (int b: KeySet)
+//			if (!visited.get(b))
+//				return false;
+//	
+//		for (int i : graph.getNodes().keySet()) {
+//			visited.put(i, false);
+//		}
+//		HashMap<Integer, HashMap<Integer, Edge_Data>> edges = new HashMap<Integer, HashMap<Integer, Edge_Data>>();
+//		for(int u : NodeList) {
+//			Set<Integer> EdgeList = graph.getEdge(u).keySet();
+//			for (int z : EdgeList) {
+//				HashMap<Integer, Edge_Data> value = new HashMap<Integer, Edge_Data>();
+//				value.put(u,(Edge_Data) graph.getEdge(u, z));
+//				edges.put(z,value);
+//			}
+//		}
+//		DGraph gr = new DGraph(graph.getNodes(),edges);
+//		// Again run a DFS starting at v
+//		DFS(gr, v, visited);
+//
+//		// If DFS traversal doesn’t visit all vertices,
+//		// then graph is not strongly connected
+//		Set<Integer> KeySet2;
+//		KeySet2 = visited.keySet();
+//		for (int b: KeySet2)
+//			if (!visited.get(b))
+//				return false;
+//
+//		// if graph "passes" both DFSs, it is strongly connected
+//		return true;
+//	}
 	private static Object deepCopy(Object object) {
 	   try {
 	     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
