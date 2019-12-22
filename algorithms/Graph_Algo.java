@@ -35,12 +35,10 @@ public class Graph_Algo implements graph_algorithms{
 	}
 	@Override
 	public void init(String file_name) {
-		// TODO Auto-generated method stub
 		
 	}
 	@Override
 	public void save(String file_name) {
-		// TODO Auto-generated method stub
 		
 	}
 	@Override
@@ -54,7 +52,7 @@ public class Graph_Algo implements graph_algorithms{
 	}
 	@Override
 	public List<node_data> shortestPath(int src, int dest) {
-		// TODO Auto-generated method stub
+		
 		return null;
 	}
 	@Override
@@ -74,10 +72,9 @@ public class Graph_Algo implements graph_algorithms{
 			visited.put(v,true);
 		}
 		ArrayList<Node_Data> Neighbors = g.getNodes().get(v).getNeighbors();
-		for(Node_Data u : Neighbors) {
-			boolean bool = visited.get(u.getKey());
-			if(!bool) {
-				DFS(g,u.getKey(),visited);
+		for(Node_Data u2 : Neighbors) {
+			if(!visited.get(u2.getKey())) {
+				DFS(g,u2.getKey(),visited);
 			}
 		}
 	}
@@ -111,8 +108,8 @@ public class Graph_Algo implements graph_algorithms{
 			Set<Integer> EdgeList = graph.getEdge(u).keySet();
 			for (int z : EdgeList) {
 				HashMap<Integer, Edge_Data> value = new HashMap<Integer, Edge_Data>();
-				value.put(u,(Edge_Data) graph.getEdge(u, z));
-				edges.put(z, value);
+				value.put(u,(Edge_Data) graph.getEdge(z, u));
+				edges.put(u, value);
 			}
 		}
 		DGraph gr = new DGraph(graph.getNodes(),edges);

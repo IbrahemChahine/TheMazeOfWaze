@@ -2,6 +2,11 @@ package dataStructure;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
+
+import com.sun.corba.se.impl.orbutil.graph.Node;
+import com.sun.xml.internal.bind.marshaller.NoEscapeHandler;
 
 
 public class DGraph implements graph{
@@ -19,6 +24,15 @@ public class DGraph implements graph{
 	public DGraph(HashMap<Integer, Node_Data> nodes, HashMap<Integer, HashMap<Integer,Edge_Data>> edges) {
 		this.Nodes = nodes;
 		this.Edges = edges;
+		Set<Integer> NodeList = this.Nodes.keySet();
+		for(int u : NodeList) {
+			this.Nodes.get(u).clearNeighbors();
+			Set<Integer> EdgeList = this.Edges.get(u).keySet();
+			for(int v : EdgeList) {
+				this.Nodes.get(v).addNeighbor(this.Nodes.get(u));
+			}
+				
+		}
 	}
 	@Override
 	public node_data getNode(int key) {
@@ -39,6 +53,9 @@ public class DGraph implements graph{
 	}
 	@Override
 	public void addNode(node_data n) {
+		if(this.Nodes.containsKey(n.getKey())) {
+			throw new RuntimeException("the given Key already belong to a node in this Graph");
+		}
 		this.Nodes.put(n.getKey(), (Node_Data) n);
 		HashMap<Integer,Edge_Data> edge = new HashMap<Integer,Edge_Data>();
 		this.Edges.put(n.getKey(), edge);
@@ -50,16 +67,21 @@ public class DGraph implements graph{
 			throw new RuntimeException("One or Two of the given Keys doesn't belong to any Node in this Graph.");
 		}
 		if(w<0) {
-			throw new RuntimeException("The weight of an edge cannot be negative");
+			throw new RuntimeException("The weight of an edge cannot be negative.");
+		}
+		if(Nodes.get(src) == Nodes.get(dest)) {
+			throw new RuntimeException("The given keys belong to the same node.");
 		}
 		if(!Edges.containsKey(src)) {
 			Edge_Data value = new Edge_Data(Nodes.get(src),Nodes.get(dest), w);
 			this.Edges.put(src, new HashMap< Integer ,Edge_Data>() );
 			this.Edges.get(src).put(dest,value);
+			this.Nodes.get(src).addNeighbor((Node_Data) this.getNode(dest));
 		}
 		else if(Edges.containsKey(src)){
 			Edge_Data value = new Edge_Data(Nodes.get(src),Nodes.get(dest), w);
 			this.Edges.get(src).put(dest,value);
+			this.Nodes.get(src).addNeighbor((Node_Data) this.getNode(dest));
 		}
 		EdgeCount++;
 		MC++;

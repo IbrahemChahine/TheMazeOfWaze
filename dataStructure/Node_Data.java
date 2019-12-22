@@ -10,7 +10,7 @@ public class Node_Data implements node_data{
 	private double weight;
 	private Point3D Location;
 	private String Info;
-	private ArrayList<Node_Data> Neighbors;
+	private ArrayList<Node_Data> Neighbors = new ArrayList<Node_Data>();
 	
 	public Node_Data(int key,double weight, Point3D location,String info) {
 		this.key = key;
@@ -22,8 +22,11 @@ public class Node_Data implements node_data{
 	public ArrayList<Node_Data> getNeighbors(){
 		return this.Neighbors;
 	}
-	public void addNeighbor(node_data n) {
-		Neighbors.add((Node_Data) n);
+	public void addNeighbor(Node_Data n) {
+		this.Neighbors.add(n);
+	}
+	public void clearNeighbors() {
+		this.Neighbors.clear();
 	}
 	@Override
 	public int getKey() {
