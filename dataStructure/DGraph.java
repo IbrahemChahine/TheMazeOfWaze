@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 public class DGraph implements graph{
-	
+	//TODO add value isConnected that gives old answer if MC hasn't changed
 	private HashMap<Integer, Node_Data> Nodes;
 	private HashMap<Integer, HashMap<Integer,Edge_Data>> Edges;
 	private int EdgeCount;
@@ -75,6 +75,9 @@ public class DGraph implements graph{
 			this.Nodes.get(src).addNeighbor((Node_Data) this.getNode(dest));
 		}
 		else if(Edges.containsKey(src)){
+			if(Edges.get(src).containsKey(dest)) {
+				throw new RuntimeException("This Edge already exists.");
+			}
 			Edge_Data value = new Edge_Data(Nodes.get(src),Nodes.get(dest), w);
 			this.Edges.get(src).put(dest,value);
 			this.Nodes.get(src).addNeighbor((Node_Data) this.getNode(dest));
@@ -84,24 +87,24 @@ public class DGraph implements graph{
 	}
 	@Override
 	public Collection<node_data> getV() {
-		HashMap<Integer, Node_Data> shallowCopy = (HashMap<Integer, Node_Data>) this.Nodes.clone();
+		HashMap<Integer, Node_Data> shallowCopy = (HashMap<Integer, Node_Data>) this.Nodes;
 		return (Collection<node_data>) shallowCopy;
+	}
+	@Override
+	public Collection<edge_data> getE(int node_id) {
+		HashMap<Integer, Edge_Data> shallowCopy = (HashMap<Integer ,Edge_Data>) this.Edges.get(node_id);
+		return (Collection<edge_data>) shallowCopy;
 	}
 	public HashMap<Integer, Node_Data> getNodes() {
 		HashMap<Integer, Node_Data> Copy = (HashMap<Integer, Node_Data>) this.Nodes;
 		return Copy;
-	}
-	@Override
-	public Collection<edge_data> getE(int node_id) {
-		HashMap<Integer, Edge_Data> shallowCopy = (HashMap<Integer ,Edge_Data>) this.Edges.get(node_id).clone();
-		return (Collection<edge_data>) shallowCopy;
 	}
 	public HashMap<Integer, Edge_Data> getEdge(int node_id) {
 		HashMap<Integer, Edge_Data> Copy = (HashMap<Integer ,Edge_Data>) this.Edges.get(node_id);
 		return Copy;
 	}
 	@Override
-	public node_data removeNode(int key) {
+	public node_data removeNode(int key) { //TODO update neighbors
 		if(!Nodes.containsKey(key)) {
 			throw new RuntimeException("The given key doesn't belong to any Node in this Graph.");
 		}
@@ -114,7 +117,7 @@ public class DGraph implements graph{
 		return node;
 	}
 	@Override
-	public edge_data removeEdge(int src, int dest) {
+	public edge_data removeEdge(int src, int dest) { //TODO update neighbors
 		if(!this.Edges.get(src).containsKey(dest)) {
 			throw new RuntimeException("One or Two of the given Keys doesn't belong to any Edge in this Graph.");
 		}
@@ -135,5 +138,9 @@ public class DGraph implements graph{
 	@Override
 	public int getMC() {
 		return this.MC;
+	}
+	public HashMap<Integer, HashMap<Integer, Edge_Data>> getEdges() {
+		HashMap<Integer, HashMap<Integer, Edge_Data>> Copy = (HashMap<Integer, HashMap<Integer, Edge_Data>>) this.Edges;
+		return Copy;
 	}
 }
