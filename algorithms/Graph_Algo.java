@@ -53,26 +53,43 @@ public class Graph_Algo implements graph_algorithms{
 		// TODO Auto-generated method stub
 		return 0;
 	}
+	/*
+	 * Shortest path.
+	 * TODO Implement an if() to check if the destination is reachable by the source.
+	 */
 	@Override
 	public List<node_data> shortestPath(int src, int dest) {
-		return null;
+		if(!Graph.getNodes().containsKey(src) || !Graph.getNodes().containsKey(dest)) {
+			throw new RuntimeException("One or Two of the given keys doesn't belong to any node in the graph. ");
+		}
+		HashMap<Integer, Double> distance = new HashMap<Integer, Double>();
+		LinkedList<node_data> predecessor = new LinkedList<node_data>();
+		for(int i = 0; i<100000000; i++) {
+			predecessor.add(null);
+		}
+		for(int u : this.Graph.getNodes().keySet()) {
+			distance.put(u,(double) 100000);
+			predecessor.set(u,null);
+		}
+		distance.replace(src,(double) 0);
+		for(int i = 0; i < Graph.getNodes().size(); i++) {
+			for(int v : Graph.getEdges().keySet()) {
+				for(int u : Graph.getEdge(v).keySet()) {
+					if(( distance.get(v) + Graph.getEdge(v).get(u).getWeight() )< distance.get(u)) {
+						distance.replace(u,distance.get(v)+Graph.getEdge(v).get(u).getWeight());
+						predecessor.set(u,Graph.getNodes().get(v));
+					}
+				}
+			}
+		}
+		return predecessor;
 	}
-	/*
-	 * shortest path.
-	 */
 	
-	/*
-	 * end.
-	 */
 	@Override
 	public List<node_data> TSP(List<Integer> targets) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	/**
-	 * DFS
-	 * not done.
-	 */
 	public static void DFS(DGraph g, int v, HashMap<Integer,Boolean> visited) {
 		if(visited.containsKey(v)) {
 			visited.replace(v, true);
