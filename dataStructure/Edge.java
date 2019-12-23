@@ -1,13 +1,13 @@
 package dataStructure;
 
-public class Edge_Data implements edge_data{
+public class Edge implements edge_data{
 
-	private Node_Data Src;
-	private Node_Data Dest;
+	private Node Src;
+	private Node Dest;
 	private int Tag;
 	private double weight;
 	private String Info;
-	public Edge_Data(Node_Data src, Node_Data dest, double weight) {
+	public Edge(Node src, Node dest, double weight) {
 		this.Src = src;
 		this.Dest = dest;
 		this.weight = weight;

@@ -7,17 +7,17 @@ import java.util.Set;
 
 public class DGraph implements graph{
 	//TODO add value isConnected that gives old answer if MC hasn't changed
-	private HashMap<Integer, Node_Data> Nodes;
-	private HashMap<Integer, HashMap<Integer,Edge_Data>> Edges;
+	private HashMap<Integer, Node> Nodes;
+	private HashMap<Integer, HashMap<Integer,Edge>> Edges;
 	private int EdgeCount;
 	private int MC;
 	public DGraph() {
-		this.Nodes = new HashMap<Integer, Node_Data>();
-		this.Edges = new HashMap<Integer, HashMap<Integer,Edge_Data>>();
+		this.Nodes = new HashMap<Integer, Node>();
+		this.Edges = new HashMap<Integer, HashMap<Integer,Edge>>();
 		this.EdgeCount = 0;
 		this.MC = 0;
 	}
-	public DGraph(HashMap<Integer, Node_Data> nodes, HashMap<Integer, HashMap<Integer,Edge_Data>> edges) {
+	public DGraph(HashMap<Integer, Node> nodes, HashMap<Integer, HashMap<Integer,Edge>> edges) {
 		this.Nodes = nodes;
 		this.Edges = edges;
 		Set<Integer> NodeList = this.Nodes.keySet();
@@ -52,8 +52,8 @@ public class DGraph implements graph{
 		if(this.Nodes.containsKey(n.getKey())) {
 			throw new RuntimeException("the given Key already belong to a node in this Graph");
 		}
-		this.Nodes.put(n.getKey(), (Node_Data) n);
-		HashMap<Integer,Edge_Data> edge = new HashMap<Integer,Edge_Data>();
+		this.Nodes.put(n.getKey(), (Node) n);
+		HashMap<Integer,Edge> edge = new HashMap<Integer,Edge>();
 		this.Edges.put(n.getKey(), edge);
 		this.MC++;
 	}
@@ -69,38 +69,38 @@ public class DGraph implements graph{
 			throw new RuntimeException("The given keys belong to the same node.");
 		}
 		if(!Edges.containsKey(src)) {
-			Edge_Data value = new Edge_Data(Nodes.get(src),Nodes.get(dest), w);
-			this.Edges.put(src, new HashMap< Integer ,Edge_Data>() );
+			Edge value = new Edge(Nodes.get(src),Nodes.get(dest), w);
+			this.Edges.put(src, new HashMap< Integer ,Edge>() );
 			this.Edges.get(src).put(dest,value);
-			this.Nodes.get(src).addNeighbor((Node_Data) this.getNode(dest));
+			this.Nodes.get(src).addNeighbor((Node) this.getNode(dest));
 		}
 		else if(Edges.containsKey(src)){
 			if(Edges.get(src).containsKey(dest)) {
 				throw new RuntimeException("This Edge already exists.");
 			}
-			Edge_Data value = new Edge_Data(Nodes.get(src),Nodes.get(dest), w);
+			Edge value = new Edge(Nodes.get(src),Nodes.get(dest), w);
 			this.Edges.get(src).put(dest,value);
-			this.Nodes.get(src).addNeighbor((Node_Data) this.getNode(dest));
+			this.Nodes.get(src).addNeighbor((Node) this.getNode(dest));
 		}
 		EdgeCount++;
 		MC++;
 	}
 	@Override
 	public Collection<node_data> getV() {
-		HashMap<Integer, Node_Data> shallowCopy = (HashMap<Integer, Node_Data>) this.Nodes;
+		HashMap<Integer, Node> shallowCopy = (HashMap<Integer, Node>) this.Nodes;
 		return (Collection<node_data>) shallowCopy;
 	}
 	@Override
 	public Collection<edge_data> getE(int node_id) {
-		HashMap<Integer, Edge_Data> shallowCopy = (HashMap<Integer ,Edge_Data>) this.Edges.get(node_id);
+		HashMap<Integer, Edge> shallowCopy = (HashMap<Integer ,Edge>) this.Edges.get(node_id);
 		return (Collection<edge_data>) shallowCopy;
 	}
-	public HashMap<Integer, Node_Data> getNodes() {
-		HashMap<Integer, Node_Data> Copy = (HashMap<Integer, Node_Data>) this.Nodes;
+	public HashMap<Integer, Node> getNodes() {
+		HashMap<Integer, Node> Copy = (HashMap<Integer, Node>) this.Nodes;
 		return Copy;
 	}
-	public HashMap<Integer, Edge_Data> getEdge(int node_id) {
-		HashMap<Integer, Edge_Data> Copy = (HashMap<Integer ,Edge_Data>) this.Edges.get(node_id);
+	public HashMap<Integer, Edge> getEdge(int node_id) {
+		HashMap<Integer, Edge> Copy = (HashMap<Integer ,Edge>) this.Edges.get(node_id);
 		return Copy;
 	}
 	@Override
@@ -139,8 +139,8 @@ public class DGraph implements graph{
 	public int getMC() {
 		return this.MC;
 	}
-	public HashMap<Integer, HashMap<Integer, Edge_Data>> getEdges() {
-		HashMap<Integer, HashMap<Integer, Edge_Data>> Copy = (HashMap<Integer, HashMap<Integer, Edge_Data>>) this.Edges;
+	public HashMap<Integer, HashMap<Integer, Edge>> getEdges() {
+		HashMap<Integer, HashMap<Integer, Edge>> Copy = (HashMap<Integer, HashMap<Integer, Edge>>) this.Edges;
 		return Copy;
 	}
 }

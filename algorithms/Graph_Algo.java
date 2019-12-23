@@ -6,6 +6,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -14,10 +15,10 @@ import java.util.Set;
 import java.util.Stack;
 
 import dataStructure.DGraph;
-import dataStructure.Edge_Data;
+import dataStructure.Edge;
 import dataStructure.graph;
 import dataStructure.node_data;
-import dataStructure.Node_Data;
+import dataStructure.Node;
 
 /**
  * This empty class represents the set of graph-theory algorithms
@@ -57,32 +58,84 @@ public class Graph_Algo implements graph_algorithms{
 	 * Shortest path.
 	 * TODO Implement an if() to check if the destination is reachable by the source.
 	 */
+//	@Override
+//	public List<node_data> shortestPath(int src, int dest) {
+//		if(!Graph.getNodes().containsKey(src) || !Graph.getNodes().containsKey(dest)) {
+//			throw new RuntimeException("One or Two of the given keys doesn't belong to any node in the graph. ");
+//		}
+//		HashMap<Integer, Double> distance = new HashMap<Integer, Double>();
+//		LinkedList<node_data> predecessor = new LinkedList<node_data>();
+//		for(int i = 0; i<100000000; i++) {
+//			predecessor.add(null);
+//		}
+//		for(int u : this.Graph.getNodes().keySet()) {
+//			distance.put(u,(double) 100000);
+//			predecessor.set(u,null);
+//		}
+//		distance.replace(src,(double) 0);
+//		for(int i = 0; i < Graph.getNodes().size(); i++) {
+//			for(int v : Graph.getEdges().keySet()) {
+//				for(int u : Graph.getEdge(v).keySet()) {
+//					if(( distance.get(v) + Graph.getEdge(v).get(u).getWeight() )< distance.get(u)) {
+//						distance.replace(u,distance.get(v)+Graph.getEdge(v).get(u).getWeight());
+//						predecessor.set(u,Graph.getNodes().get(v));
+//					}
+//				}
+//			}
+//		}
+//		return predecessor;
+//	}
+	
 	@Override
 	public List<node_data> shortestPath(int src, int dest) {
-		if(!Graph.getNodes().containsKey(src) || !Graph.getNodes().containsKey(dest)) {
-			throw new RuntimeException("One or Two of the given keys doesn't belong to any node in the graph. ");
+		Node source = (Node) this.Graph.getNode(src);
+		source.setWeight(0);
+		source.predecessor = null;
+		HashMap<Integer, Node> graphNodes = this.Graph.getNodes();
+		MyMinheap myHeap = new MyMinheap(graphNodes.size());
+		for (int i : graphNodes.keySet()) {
+			graphNodes.get(i).setWeight(Double.POSITIVE_INFINITY);
+			graphNodes.get(i).visited = false;
+			myHeap.add(graphNodes.get(i));
 		}
-		HashMap<Integer, Double> distance = new HashMap<Integer, Double>();
-		LinkedList<node_data> predecessor = new LinkedList<node_data>();
-		for(int i = 0; i<100000000; i++) {
-			predecessor.add(null);
-		}
-		for(int u : this.Graph.getNodes().keySet()) {
-			distance.put(u,(double) 100000);
-			predecessor.set(u,null);
-		}
-		distance.replace(src,(double) 0);
-		for(int i = 0; i < Graph.getNodes().size(); i++) {
-			for(int v : Graph.getEdges().keySet()) {
-				for(int u : Graph.getEdge(v).keySet()) {
-					if(( distance.get(v) + Graph.getEdge(v).get(u).getWeight() )< distance.get(u)) {
-						distance.replace(u,distance.get(v)+Graph.getEdge(v).get(u).getWeight());
-						predecessor.set(u,Graph.getNodes().get(v));
+		
+		
+		
+		while(!myHeap.isEmpty()) {
+			Node currentNode = myHeap.heapExtractMin();
+			int currentKey = currentNode.getKey();
+			
+			for(int i : this.Graph.getEdges().get(currentKey).keySet()) {
+				Node currentNextNode = (Node) this.Graph.getNode(i);
+				if(!currentNextNode.visited) {
+					double currentEdgeWeight = this.Graph.getEdges().get(src).get(dest).getWeight();
+					double optionalNewDistance = currentNode.getWeight() + currentEdgeWeight;
+					
+					if(optionalNewDistance<currentNextNode.getWeight()) {
+						currentNextNode.setWeight(optionalNewDistance);
+						currentNextNode.predecessor = currentNode;
+						
+						for (int j = 0; j < myHeap.size; j++) { //update the minHeap
+							if(myHeap.heapNodeArray[j]==currentNextNode) {
+								myHeap.minHeapify(j);
+								j=myHeap.size;
+							}
+						}//end updating minHeap	
 					}
 				}
-			}
+			}//end for loop
+			currentNode.visited=true;
 		}
-		return predecessor;
+		Node currentNode2 = (Node) this.Graph.getNode(dest);
+		ArrayList<node_data> Answer = new ArrayList<node_data>();
+		while(currentNode2!=null) {
+			Answer.add(currentNode2);
+			currentNode2 = currentNode2.predecessor;
+		}
+		Collections.reverse(Answer);
+		
+		
+		return Answer;
 	}
 	
 	@Override
@@ -97,8 +150,8 @@ public class Graph_Algo implements graph_algorithms{
 		else {
 			visited.put(v,true);
 		}
-		ArrayList<Node_Data> Neighbors = g.getNodes().get(v).getNeighbors();
-		for(Node_Data u2 : Neighbors) {
+		ArrayList<Node> Neighbors = g.getNodes().get(v).getNeighbors();
+		for(Node u2 : Neighbors) {
 			if(!visited.get(u2.getKey())) {
 				DFS(g,u2.getKey(),visited);
 			}

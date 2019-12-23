@@ -4,25 +4,27 @@ import java.util.ArrayList;
 
 import utils.Point3D;
 
-public class Node_Data implements node_data{
+public class Node implements node_data{
+	public boolean visited = false;
+	public Node predecessor = null;
 	private int key;
 	private int tag;
 	private double weight;
 	private Point3D Location;
 	private String Info;
-	private ArrayList<Node_Data> Neighbors = new ArrayList<Node_Data>();
+	private ArrayList<Node> Neighbors = new ArrayList<Node>();
 	
-	public Node_Data(int key,double weight, Point3D location,String info) {
+	public Node(int key,double weight, Point3D location,String info) {
 		this.key = key;
 		this.weight = weight;
 		this.Location = location;
 		this.Info = info;
 	}
 	
-	public ArrayList<Node_Data> getNeighbors(){
+	public ArrayList<Node> getNeighbors(){
 		return this.Neighbors;
 	}
-	public void addNeighbor(Node_Data n) {
+	public void addNeighbor(Node n) {
 		this.Neighbors.add(n);
 	}
 	public void clearNeighbors() {
