@@ -94,7 +94,7 @@ public class Graph_Algo implements graph_algorithms{
 		HashMap<Integer, Node> graphNodes = this.Graph.getNodes();
 		MyMinheap myHeap = new MyMinheap(graphNodes.size());
 		for (int i : graphNodes.keySet()) {
-			graphNodes.get(i).setWeight(Double.POSITIVE_INFINITY);
+			if(graphNodes.get(i).getKey()!=src) { graphNodes.get(i).setWeight(Double.POSITIVE_INFINITY);}
 			graphNodes.get(i).visited = false;
 			myHeap.add(graphNodes.get(i));
 		}
@@ -108,7 +108,12 @@ public class Graph_Algo implements graph_algorithms{
 			for(int i : this.Graph.getEdges().get(currentKey).keySet()) {
 				Node currentNextNode = (Node) this.Graph.getNode(i);
 				if(!currentNextNode.visited) {
-					double currentEdgeWeight = this.Graph.getEdges().get(src).get(dest).getWeight();
+//					if(currentKey==1) {
+//						System.out.println("currentKey==1");
+//					}
+//					Edge tempEdge = this.Graph.getEdges().get(src).get(dest);
+					
+					double currentEdgeWeight = this.Graph.getEdges().get(currentKey).get(i).getWeight();
 					double optionalNewDistance = currentNode.getWeight() + currentEdgeWeight;
 					
 					if(optionalNewDistance<currentNextNode.getWeight()) {
@@ -117,7 +122,7 @@ public class Graph_Algo implements graph_algorithms{
 						
 						for (int j = 0; j < myHeap.size; j++) { //update the minHeap
 							if(myHeap.heapNodeArray[j]==currentNextNode) {
-								myHeap.minHeapify(j);
+								myHeap.minHeapify((j-1)/2); //heapify the parent node
 								j=myHeap.size;
 							}
 						}//end updating minHeap	

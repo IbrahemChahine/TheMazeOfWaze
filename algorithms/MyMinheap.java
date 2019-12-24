@@ -20,13 +20,17 @@ public class MyMinheap {
 	public MyMinheap(int maxSize) {
 		this.maxSize = maxSize;
 		heapNodeArray = new Node[maxSize];
+		size=0;
 		
 	}
 	
 	public void add(Node newNode) {
 //		HeapNode newHeapNode = new HeapNode(newNode);
-		this.heapNodeArray[++size] = newNode;
+		this.heapNodeArray[size] = newNode;
+		size++;
 		int now = size-1;
+		
+		if(size==1) {return;} //if there is only 1 Node in the heap, no need to do anymore.
 		
 		while(heapNodeArray[now].getWeight() < heapNodeArray[parent(now)].getWeight()) {
 			swap(now, parent(now));
