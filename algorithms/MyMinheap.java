@@ -103,7 +103,7 @@ public class MyMinheap {
 		}
 		if (smallest!=v){
 			swap(v, smallest);
-			minHeapify(smallest);
+			minHeapify(parent(v));
 		}		
 	}
     

@@ -1,19 +1,15 @@
 package algorithms;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
-import java.util.Stack;
-
 import dataStructure.DGraph;
 import dataStructure.Edge;
 import dataStructure.graph;
@@ -26,24 +22,80 @@ import dataStructure.Node;
  * @author 
  *
  */
-public class Graph_Algo implements graph_algorithms{
-	private DGraph Graph;
+public class Graph_Algo implements graph_algorithms, Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5167313342016016336L;
+	/**
+	 * 
+	 */
+	public DGraph Graph;
 	
 	@Override
 	public void init(graph g) {
 		this.Graph = (DGraph) g;
 	}
+	
+	public void init(Graph_Algo g) {
+		this.Graph = (DGraph) g.copy();
+	}
+	
 	@Override
 	public graph copy() {
-		return (graph) deepCopy(this);
-	}
-	@Override
-	public void init(String file_name) {
-		
+		DGraph copy = new DGraph();
+		for (int i : this.Graph.getNodes().keySet()) {
+			copy.addNode(new Node(i,this.Graph.getNodes().get(i).getWeight(),this.Graph.getNodes().get(i).getLocation(),this.Graph.getNodes().get(i).getInfo()));
+		}
+		for( int u : this.Graph.getNodes().keySet()) {
+			for (int v : this.Graph.getEdge(u).keySet()) {
+				copy.connect(u,v,this.Graph.getEdge(u).get(v).getWeight());
+			}
+		}
+		return copy;
 	}
 	@Override
 	public void save(String file_name) {
-		
+		try {
+			FileOutputStream file = new FileOutputStream(file_name); 
+	        ObjectOutputStream out;
+			out = new ObjectOutputStream(file);
+			DGraph graphCopy = (DGraph)this.copy();
+			Graph_Algo tempToFile = new Graph_Algo();
+			tempToFile.init(graphCopy);
+	        out.writeObject(tempToFile); 
+	        out.close(); 
+	        file.close();
+	        System.out.println("Object has been serialized"); 
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+
+	}
+	@Override
+	public void init(String file_name) {
+        try
+        {    
+            FileInputStream file = new FileInputStream(file_name); 
+            ObjectInputStream in = new ObjectInputStream(file); 
+              
+            init((Graph_Algo)in.readObject());
+            in.close(); 
+            file.close(); 
+              
+            System.out.println("Object has been deserialized"); 
+        } 
+          
+        catch(IOException ex) 
+        { 
+            System.out.println("IOException is caught"); 
+        } 
+          
+        catch(ClassNotFoundException ex) 
+        { 
+            System.out.println("ClassNotFoundException is caught"); 
+        } 
 	}
 	@Override
 	public boolean isConnected() {
@@ -51,43 +103,24 @@ public class Graph_Algo implements graph_algorithms{
 	}
 	@Override
 	public double shortestPathDist(int src, int dest) {
-		// TODO Auto-generated method stub
-		return 0;
+		List<node_data> temp = shortestPath(src, dest);
+		Node lastNodeInPath = (Node) temp.get(temp.size());
+		return lastNodeInPath.getWeight();
 	}
-	/*
-	 * Shortest path.
-	 * TODO Implement an if() to check if the destination is reachable by the source.
-	 */
-//	@Override
-//	public List<node_data> shortestPath(int src, int dest) {
-//		if(!Graph.getNodes().containsKey(src) || !Graph.getNodes().containsKey(dest)) {
-//			throw new RuntimeException("One or Two of the given keys doesn't belong to any node in the graph. ");
-//		}
-//		HashMap<Integer, Double> distance = new HashMap<Integer, Double>();
-//		LinkedList<node_data> predecessor = new LinkedList<node_data>();
-//		for(int i = 0; i<100000000; i++) {
-//			predecessor.add(null);
-//		}
-//		for(int u : this.Graph.getNodes().keySet()) {
-//			distance.put(u,(double) 100000);
-//			predecessor.set(u,null);
-//		}
-//		distance.replace(src,(double) 0);
-//		for(int i = 0; i < Graph.getNodes().size(); i++) {
-//			for(int v : Graph.getEdges().keySet()) {
-//				for(int u : Graph.getEdge(v).keySet()) {
-//					if(( distance.get(v) + Graph.getEdge(v).get(u).getWeight() )< distance.get(u)) {
-//						distance.replace(u,distance.get(v)+Graph.getEdge(v).get(u).getWeight());
-//						predecessor.set(u,Graph.getNodes().get(v));
-//					}
-//				}
-//			}
-//		}
-//		return predecessor;
-//	}
+	
 	
 	@Override
 	public List<node_data> shortestPath(int src, int dest) {
+//		first check if the two nodes are connected
+		HashMap<Integer,Boolean> visited1 = new HashMap<Integer,Boolean>();
+		for(int u : this.Graph.getNodes().keySet()) {
+			visited1.put(u,false);
+		}
+		DFS(this.Graph, src, visited1);
+		if(!(visited1.get(dest))) {
+			throw new RuntimeException("There is no existing path between the source and the destination!");
+		}
+		
 		Node source = (Node) this.Graph.getNode(src);
 		source.setWeight(0);
 		source.predecessor = null;
@@ -96,6 +129,7 @@ public class Graph_Algo implements graph_algorithms{
 		for (int i : graphNodes.keySet()) {
 			if(graphNodes.get(i).getKey()!=src) { graphNodes.get(i).setWeight(Double.POSITIVE_INFINITY);}
 			graphNodes.get(i).visited = false;
+			graphNodes.get(i).predecessor = null;
 			myHeap.add(graphNodes.get(i));
 		}
 		
@@ -108,10 +142,7 @@ public class Graph_Algo implements graph_algorithms{
 			for(int i : this.Graph.getEdges().get(currentKey).keySet()) {
 				Node currentNextNode = (Node) this.Graph.getNode(i);
 				if(!currentNextNode.visited) {
-//					if(currentKey==1) {
-//						System.out.println("currentKey==1");
-//					}
-//					Edge tempEdge = this.Graph.getEdges().get(src).get(dest);
+
 					
 					double currentEdgeWeight = this.Graph.getEdges().get(currentKey).get(i).getWeight();
 					double optionalNewDistance = currentNode.getWeight() + currentEdgeWeight;
@@ -145,10 +176,20 @@ public class Graph_Algo implements graph_algorithms{
 	
 	@Override
 	public List<node_data> TSP(List<Integer> targets) {
-		// TODO Auto-generated method stub
+		HashMap<Integer, HashMap<Integer,Double>> Distances = new HashMap<Integer, HashMap<Integer,Double>>();
+		for (int i : targets) {
+			Distances.put(i, new HashMap<Integer,Double>()); //create a new inner HashMap for each of the targets
+			for (int j : targets) {
+				if(i==j) {continue;}
+				double currentDistance = shortestPathDist(i,j);
+				Distances.get(i).put(j, currentDistance);
+			}
+		}
+		
+		
 		return null;
 	}
-	public static void DFS(DGraph g, int v, HashMap<Integer,Boolean> visited) {
+	public void DFS(DGraph g, int v, HashMap<Integer,Boolean> visited) {
 		if(visited.containsKey(v)) {
 			visited.replace(v, true);
 		}
@@ -162,7 +203,7 @@ public class Graph_Algo implements graph_algorithms{
 			}
 		}
 	}
-	public static boolean check(DGraph graph) {
+	public boolean check(DGraph graph) {
 		for(int v : graph.getNodes().keySet()) {
 			HashMap<Integer,Boolean> visited = new HashMap<Integer,Boolean>();
 			for (int i : graph.getNodes().keySet()) {
@@ -224,19 +265,19 @@ public class Graph_Algo implements graph_algorithms{
 //		// if graph "passes" both DFSs, it is strongly connected
 //		return true;
 //	}
-	private static Object deepCopy(Object object) {
-	   try {
-	     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-	     ObjectOutputStream outputStrm = new ObjectOutputStream(outputStream);
-	     outputStrm.writeObject(object);
-	     ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
-	     ObjectInputStream objInputStream = new ObjectInputStream(inputStream);
-	     return objInputStream.readObject();
-	   }
-	   catch (Exception e) {
-	     e.printStackTrace();
-	     return null;
-	   }
- }
+//	private static Object deepCopy(Object object) {
+//	   try {
+//	     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+//	     ObjectOutputStream outputStrm = new ObjectOutputStream(outputStream);
+//	     outputStrm.writeObject(object);
+//	     ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
+//	     ObjectInputStream objInputStream = new ObjectInputStream(inputStream);
+//	     return objInputStream.readObject();
+//	   }
+//	   catch (Exception e) {
+//	     e.printStackTrace();
+//	     return null;
+//	   }
+// }
 	
 }

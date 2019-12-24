@@ -1,7 +1,13 @@
 package dataStructure;
 
-public class Edge implements edge_data{
+import java.io.Serializable;
 
+public class Edge implements edge_data, Serializable{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8957738987340476763L;
 	private Node Src;
 	private Node Dest;
 	private int Tag;
