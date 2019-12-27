@@ -11,6 +11,7 @@ import java.util.*;
 import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
+import javax.swing.JMenuBar;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import dataStructure.DGraph;
@@ -54,6 +55,7 @@ public class GraphComponent extends JComponent {
     LoadFromFile = new JFileChooser();
     //LoadFromFile.setCurrentDirectory("");
     LoadFromFile.setFileFilter( new FileNameExtensionFilter("Json FIle","json"));
+    JMenuBar File = new JMenuBar();
   }
   
   /**
@@ -64,7 +66,7 @@ public class GraphComponent extends JComponent {
   public void paint(Graphics g) {
         for (int u : this.Graph.getEdges().keySet()) {
 	    	for(int v : this.Graph.getEdge(u).keySet()) {
-				g.setColor(Color.ORANGE);
+				
 				try {
 					int x1 = this.Graph.getNode(u).getLocation().ix();
 					int y1 = this.Graph.getNode(u).getLocation().iy();
@@ -78,17 +80,26 @@ public class GraphComponent extends JComponent {
 					double edgeX2 = x2 - Math.cos(theta)*NODE_RADIUS;
 					double edgeY2 = y2 - Math.sin(theta)*NODE_RADIUS;
 					// arrow
-					g.drawLine((int)Math.round(edgeX1), (int)Math.round(edgeY1),(int)Math.round(edgeX2), (int)Math.round(edgeY2));
+					int tag = this.Graph.getEdge(u).get(v).getTag();
+					if(tag == 1) {
+						g.setColor(Color.red);
+						g.drawLine((int)Math.round(edgeX1), (int)Math.round(edgeY1),(int)Math.round(edgeX2), (int)Math.round(edgeY2));
+					}
+					else {
+						g.setColor(Color.ORANGE);
+						g.drawLine((int)Math.round(edgeX1), (int)Math.round(edgeY1),(int)Math.round(edgeX2), (int)Math.round(edgeY2));
+					}
 					String sss = ""+String.valueOf((double) this.Graph.getEdge(u).get(v).getWeight());
 					Node p = (Node) this.Graph.getNode(u);
 					Node p2 = (Node) this.Graph.getNode(v);
-
+					g.setColor(Color.ORANGE);
 					g.drawString(sss, 1+(int)((p.getLocation().ix()*0.7)+(0.3*p2.getLocation().ix())), 
 							(int)((p.getLocation().iy()*0.7)+(0.3*p2.getLocation().iy()))-2);
 //					g.drawString(String.valueOf(this.Graph.getEdge(u).get(v).getWeight()),
 //							(int)this.Graph.getNode(u).getLocation().ix() - (NODE_RADIUS/4),
 //							(int)this.Graph.getNode(u).getLocation().iy() - (NODE_RADIUS/4));
 					// arrow head
+
 				    double arrowX1 = edgeX2 + Math.cos(theta-ARROW_ANGLE)*ARROW_HEAD_LENGTH;
 				    double arrowY1 = edgeY2 + Math.sin(theta-ARROW_ANGLE)*ARROW_HEAD_LENGTH;
 				    double arrowX2 = edgeX2 + Math.cos(theta+ARROW_ANGLE) * ARROW_HEAD_LENGTH;

@@ -73,6 +73,7 @@ public class test {
 		
 		Graph_Algo graphAlgoTest = new Graph_Algo();
 		graphAlgoTest.init(testGraph);
+		System.out.println(graphAlgoTest.isConnected());
 		ArrayList<node_data> testAnswer = (ArrayList<node_data>) graphAlgoTest.shortestPath(0, 10);
 		System.out.println(testAnswer.toString());
 		for (int i = 0; i < testAnswer.size(); i++) {

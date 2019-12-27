@@ -36,7 +36,6 @@ public class Graph_Algo implements graph_algorithms, Serializable{
 	public void init(graph g) {
 		this.Graph = (DGraph) g;
 	}
-
 	public void init(Graph_Algo g) {
 		this.Graph = (DGraph) g.copy();
 	}

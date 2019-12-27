@@ -3,17 +3,21 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
+import com.sun.corba.se.impl.orbutil.graph.NodeData;
+
 import algorithms.Graph_Algo;
 import dataStructure.DGraph;
 import dataStructure.Edge;
 import dataStructure.Node;
 import dataStructure.graph;
+import dataStructure.node_data;
 import sun.security.x509.AlgIdDSA;
 import utils.Point3D;
 
 import java.io.*;
 import java.lang.*;
 import java.util.*;
+import java.util.List;
 
 public class GraphGUI{
     /** Holds the graph GUI component */
@@ -57,7 +61,8 @@ public class GraphGUI{
     /** Button to remove selected node(s). */
     public JButton removeNodeButton;
     
-    public JButton ShortestPath;
+    public JMenuBar File;
+
     public JButton SaveImage;
     private int ImageCount;
 
@@ -102,7 +107,6 @@ public class GraphGUI{
 		frame.pack();
 		frame.setVisible(true);
     }
-
     /**
      *  Create the components and add them to the frame.
      *
@@ -121,6 +125,10 @@ public class GraphGUI{
 	editnodepanel.setLayout(new FlowLayout());
 	JPanel editedgepanel = new JPanel();
 	editedgepanel.setLayout(new FlowLayout());
+	JPanel isconnected = new JPanel();
+	isconnected.setLayout(new FlowLayout());
+	JPanel shortestsath = new JPanel();
+	shortestsath.setLayout(new FlowLayout());
 	JPanel saveimagepanel = new JPanel();
 	saveimagepanel.setLayout(new FlowLayout());
 	JPanel Load = new JPanel();
@@ -129,12 +137,12 @@ public class GraphGUI{
 	travpanel.setLayout(new FlowLayout());
 	JPanel newpanel = new JPanel();
 	newpanel.setLayout(new FlowLayout());
-
+	
+	
 	JButton LoadFromFile = new JButton("Load");
 	LoadFromFile.addActionListener(new ActionListener(){
 		public void actionPerformed(ActionEvent e) {
 			try {
-				int returnVlaue = graphComponent.LoadFromFile.showOpenDialog(graphComponent);
 				File file = graphComponent.LoadFromFile.getSelectedFile(); 
 				String filename = file.getName();
 				Algo.init(filename);
@@ -157,7 +165,64 @@ public class GraphGUI{
 		}
 	    });
 	saveimagepanel.add(SaveToImage);
-	// Components of the edit node panel:
+	/**
+	 * isconnected.
+	 */
+
+	JLabel connect = new JLabel();
+	newpanel.add(connect);
+	JButton IsConnected = new JButton("IsConnected");
+	IsConnected.addActionListener(new ActionListener(){
+		public void actionPerformed(ActionEvent e) {
+			try {
+				Graph_Algo a = new Graph_Algo();
+				a.init(Graph);
+				if(a.isConnected()) {
+					connect.setText("The Graph is Connected");
+				}
+				if(!a.isConnected()) {
+					connect.setText("The Graph is not Connected");
+				}
+				connect.setVisible(true);
+				System.out.println(a.isConnected());
+			} catch (Exception e2) {}
+
+		}
+	    });
+	connect.setVisible(false);
+	isconnected.add(IsConnected);
+
+	/*
+	 *ShortestPath ,shortestsath
+	 */
+	JButton ShortestPath = new JButton("ShortestPath");
+	ShortestPath.addActionListener(new ActionListener(){
+		public void actionPerformed(ActionEvent e) {
+			Graph_Algo s = new Graph_Algo();
+			s.init(Graph);
+			//add comment to select first node.
+			try {
+				Node src;
+				Node dest;
+				nodesSelected.keySet();
+				Object[] arr = nodesSelected.keySet().toArray();
+				src = nodesSelected.get(arr[0]);
+				dest = nodesSelected.get(arr[1]);
+				List<node_data> Path = s.shortestPath(src.getKey(),dest.getKey());
+				for(int i = 0; i<Path.size(); i++) {
+					Graph.getEdge(Path.get(i).getKey()).get(Path.get(i+1).getKey()).setTag(1);
+				}
+				graphComponent.repaint();
+			} catch (Exception e2) {
+				
+			}
+		}
+	    });
+	shortestsath.add(ShortestPath);
+	
+	/*
+	 * 
+	 */
 	JButton addNodeButton = new JButton("Add Node");
 	addNodeButton.addActionListener(new ActionListener(){
 		public void actionPerformed(ActionEvent e) {
@@ -203,6 +268,7 @@ public class GraphGUI{
 		public void actionPerformed(ActionEvent e) {
 		    try {
 		    	addEBClicked = true;
+		    	connect.setVisible(false);
 			    instructions.setVisible(true);
 			} catch (Exception e2) {
 				
@@ -260,9 +326,12 @@ public class GraphGUI{
 //		}
 //	    });
 //	travpanel.add(resetButton);
+	
+	editpanel.add(isconnected, BorderLayout.EAST);
 	editpanel.add(editnodepanel, BorderLayout.NORTH);
 	editpanel.add(editedgepanel, BorderLayout.SOUTH);
 	editpanel.add(saveimagepanel, BorderLayout.CENTER);
+	panel.add(shortestsath, BorderLayout.EAST);
 	editpanel.add(Load, BorderLayout.WEST);
 	panel.add(editpanel, BorderLayout.NORTH);
 	panel.add(travpanel, BorderLayout.SOUTH);
@@ -302,9 +371,9 @@ public class GraphGUI{
      *  @param args  the command-line arguments
      */
     public static void main(String[] args) throws IOException {
-	GraphGUI graphicGraph;
-	graphicGraph = new GraphGUI();
-	graphicGraph.execute();
+		GraphGUI graphicGraph;
+		graphicGraph = new GraphGUI();
+		graphicGraph.execute();
     }
 
     /**
@@ -417,6 +486,7 @@ public class GraphGUI{
 		//firstN.getData().setBorderColor(myColor);
 		nodesSelected.remove(firstN.getKey());
 		nodesSelected.remove(secondN.getKey());
+
 		instructions.setVisible(false);
 		firstN = null;
 		secondN = null;
@@ -559,5 +629,7 @@ public class GraphGUI{
     private void initializeGraph() {
 	//System.out.println(Graph.validateGraph());
 	//System.out.println(Graph.toString());
+		System.out.println(Graph.getNodes().keySet());
+
     }
 }
