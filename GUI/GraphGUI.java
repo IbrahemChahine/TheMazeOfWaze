@@ -3,9 +3,12 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
+import algorithms.Graph_Algo;
 import dataStructure.DGraph;
 import dataStructure.Edge;
 import dataStructure.Node;
+import dataStructure.graph;
+import sun.security.x509.AlgIdDSA;
 import utils.Point3D;
 
 import java.io.*;
@@ -16,6 +19,7 @@ public class GraphGUI{
     /** Holds the graph GUI component */
     private GraphComponent graphComponent; 
     private DGraph Graph;
+    private Graph_Algo Algo;
     /** The window */
     private JFrame frame;
 
@@ -45,8 +49,17 @@ public class GraphGUI{
     /** Text box for editing edge's data. */
     public JTextField enterEdgeData;
 
+    public JTextField EnterSrc;
+
+    /** Text box for editing edge's data. */
+    public JTextField EnterDest;
+    
     /** Button to remove selected node(s). */
     public JButton removeNodeButton;
+    
+    public JButton ShortestPath;
+    public JButton SaveImage;
+    private int ImageCount;
 
     /** Button to remove selected edge(s). */
     public JButton removeEdgeButton;
@@ -69,8 +82,8 @@ public class GraphGUI{
     public GraphGUI() {
 		this.Graph = new DGraph();
 		initializeGraph();
+		this.ImageCount = 0;
 		this.graphComponent = new GraphComponent(this.Graph);
-		
     }
 
     /**
@@ -79,6 +92,7 @@ public class GraphGUI{
     public void createAndShowGUI() {
 		// Create and set up the window.
 		frame = new JFrame("The Maze Of Waze");
+		
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	
 		// Add components
@@ -107,11 +121,42 @@ public class GraphGUI{
 	editnodepanel.setLayout(new FlowLayout());
 	JPanel editedgepanel = new JPanel();
 	editedgepanel.setLayout(new FlowLayout());
+	JPanel saveimagepanel = new JPanel();
+	saveimagepanel.setLayout(new FlowLayout());
+	JPanel Load = new JPanel();
+	Load.setLayout(new FlowLayout());
 	JPanel travpanel = new JPanel();
 	travpanel.setLayout(new FlowLayout());
 	JPanel newpanel = new JPanel();
 	newpanel.setLayout(new FlowLayout());
 
+	JButton LoadFromFile = new JButton("Load");
+	LoadFromFile.addActionListener(new ActionListener(){
+		public void actionPerformed(ActionEvent e) {
+			try {
+				int returnVlaue = graphComponent.LoadFromFile.showOpenDialog(graphComponent);
+				File file = graphComponent.LoadFromFile.getSelectedFile(); 
+				String filename = file.getName();
+				Algo.init(filename);
+				Graph = Algo.Graph;
+				graphComponent.repaint();
+			} catch (Exception e2) {
+				System.out.println("You didn't input a File");
+			}
+		}
+	    });
+	Load.add(LoadFromFile);
+	/*
+	 * save
+	 */
+	JButton SaveToImage = new JButton("Save Image");
+	SaveToImage.addActionListener(new ActionListener(){
+		public void actionPerformed(ActionEvent e) {
+			graphComponent.saveImage("image"+ImageCount,"png");
+			ImageCount++;
+		}
+	    });
+	saveimagepanel.add(SaveToImage);
 	// Components of the edit node panel:
 	JButton addNodeButton = new JButton("Add Node");
 	addNodeButton.addActionListener(new ActionListener(){
@@ -123,21 +168,30 @@ public class GraphGUI{
 		}
 	    });
 	editnodepanel.add(addNodeButton);
+	
 	removeNodeButton = new JButton("Remove Node(s)");
 	removeNodeButton.setEnabled(false);
 	removeNodeButton.addActionListener(new ActionListener(){
 		public void actionPerformed(ActionEvent e) {
-			HashMap<Integer, Node> toRemoveNodes = new HashMap<Integer, Node>();
-		    for (int node : nodesSelected.keySet()) {
-				Graph.removeNode(node);
-				toRemoveNodes.put(node,(Node) Graph.getNode(node));
-		    }
-		    for(int node : toRemoveNodes.keySet()) {
-		    	nodesSelected.remove(node);
-		    }
-		    enterEdgeData.setText("");
-		    removeNodeButton.setEnabled(false);
-		    graphComponent.repaint();
+			try {
+				HashMap<Integer, Node> toRemoveNodes = new HashMap<Integer, Node>();
+			    for (int node : nodesSelected.keySet()) {
+					if(Graph.getNodes().containsKey(node)) {
+						Graph.removeNode(node);
+						toRemoveNodes.put(node,(Node) Graph.getNodes().get(node));
+					}
+			    }
+			    for(int node : toRemoveNodes.keySet()) {
+			    	nodesSelected.remove(node);
+			    }
+			    enterEdgeData.setText("");
+			    removeNodeButton.setEnabled(false);
+			    
+			    graphComponent.repaint();
+			} catch (Exception e2) {
+				System.out.println(e2);			
+			}
+			
 		}
 	    });
 	editnodepanel.add(removeNodeButton);
@@ -147,28 +201,31 @@ public class GraphGUI{
 	JButton addEdgeButton = new JButton("Add Edge");
 	addEdgeButton.addActionListener(new ActionListener(){
 		public void actionPerformed(ActionEvent e) {
-		    addEBClicked = true;
-		    instructions.setVisible(true);
-		    
+		    try {
+		    	addEBClicked = true;
+			    instructions.setVisible(true);
+			} catch (Exception e2) {
+				
+			}
 		}
 	    });
 	editedgepanel.add(addEdgeButton);
-	removeEdgeButton = new JButton("Remove Edge(s)");
-	removeEdgeButton.setEnabled(false);
-	removeEdgeButton.addActionListener(new ActionListener(){
-		public void actionPerformed(ActionEvent e) {
-		    for (int u : edgesSelected.keySet()) {
-		    	for(int v : edgesSelected.get(u).keySet()) {
-					Graph.removeEdge(u,v);
-					edgesSelected.get(u).remove(v);
-		    	}
-		    }
-		    enterEdgeData.setText("");
-		    removeEdgeButton.setEnabled(false);
-		    graphComponent.repaint();
-		}
-	    });
-	editedgepanel.add(removeEdgeButton);
+//	removeEdgeButton = new JButton("Remove Edge(s)");
+//	removeEdgeButton.setEnabled(false);
+//	removeEdgeButton.addActionListener(new ActionListener(){
+//		public void actionPerformed(ActionEvent e) {
+//		    for (int u : edgesSelected.keySet()) {
+//		    	for(int v : edgesSelected.get(u).keySet()) {
+//					Graph.removeEdge(u,v);
+//					edgesSelected.get(u).remove(v);
+//		    	}
+//		    }
+//		    enterEdgeData.setText("");
+//		    removeEdgeButton.setEnabled(false);
+//		    graphComponent.repaint();
+//		}
+//	    });
+//	editedgepanel.add(removeEdgeButton);
 	JLabel editEdgeLabel = new JLabel("Edit edge data: ");
 	editedgepanel.add(editEdgeLabel);
 	enterEdgeData = new JTextField(2);
@@ -177,29 +234,36 @@ public class GraphGUI{
 		public void actionPerformed(ActionEvent e) {
 		    String newEdgeData = enterEdgeData.getText();
 		    if (newEdgeData.length() != 0) {
-		    	editingEdge.setWeight(Double.valueOf(newEdgeData));
+		    	try {
+		    		if(editingEdge != null) {
+				    	editingEdge.setWeight(Double.valueOf(newEdgeData));
+			    	}
+				} catch (Exception e2) {
+					System.out.println(e2);
+				}
 		    }
 		    enterEdgeData.setText("");
 		    enterEdgeData.setEnabled(false);
 		    graphComponent.repaint();
 		}
 	    });
-	editedgepanel.add(enterEdgeData);
-
-	// Components of the traversal panel: 
-	JButton resetButton = new JButton("Reset");
-	resetButton.addActionListener(new ActionListener(){
-		public void actionPerformed(ActionEvent e) {
-		    for(int v : Graph.getNodes().keySet()) {
-		    	Graph.removeNode(v);
-		    }
-		    graphComponent.repaint();
-		}
-	    });
-	travpanel.add(resetButton);
 	
+	editedgepanel.add(enterEdgeData);
+	// Components of the traversal panel: 
+//	JButton resetButton = new JButton("Reset");
+//	resetButton.addActionListener(new ActionListener(){
+//		public void actionPerformed(ActionEvent e) {
+//		    for(int v : Graph.getNodes().keySet()) {
+//		    	Graph.removeNode(v);
+//		    }
+//		    graphComponent.repaint();
+//		}
+//	    });
+//	travpanel.add(resetButton);
 	editpanel.add(editnodepanel, BorderLayout.NORTH);
 	editpanel.add(editedgepanel, BorderLayout.SOUTH);
+	editpanel.add(saveimagepanel, BorderLayout.CENTER);
+	editpanel.add(Load, BorderLayout.WEST);
 	panel.add(editpanel, BorderLayout.NORTH);
 	panel.add(travpanel, BorderLayout.SOUTH);
 	pane.add(newpanel, BorderLayout.NORTH);
@@ -261,7 +325,7 @@ public class GraphGUI{
 	 *
 	 *  @return the distance between the point and the line
 	 */
-	public double findDist(HashMap<Integer, HashMap<Integer,Edge>> edge,
+	public double findDist(Edge edge,
 			       double edgeX1, double edgeY1, double edgeX2, double edgeY2,
 			       double mouseX, double mouseY) {
 	    double edgeSlope = (edgeY2 - edgeY1) / (edgeX2 - edgeX1);
@@ -320,7 +384,13 @@ public class GraphGUI{
 			double nodeX = Graph.getNode(node).getLocation().x();
 			double nodeY = Graph.getNode(node).getLocation().y();
 			if (Math.sqrt((nodeX-mouseX)*(nodeX-mouseX)+(nodeY-mouseY)*(nodeY-mouseY)) <= GraphComponent.NODE_RADIUS) {
-			    chosenNode = (Node) Graph.getNode(node);
+			    try {
+			    	if(Graph.getNodes().containsKey(node)) {
+				    	chosenNode = (Node) Graph.getNodes().get(node);
+				    }
+				} catch (Exception e2) {
+					System.out.println(e2);
+				}
 			}
 	    }
 	    if (chosenNode != null) {
@@ -336,12 +406,17 @@ public class GraphGUI{
 	    	secondN = chosenNode;
 		int edata = Graph.getEdges().size() + 1;
 		if (firstN != secondN) {
-		    Graph.connect(firstN.getKey(), secondN.getKey(),Double.MAX_VALUE);
+			try {
+			    Graph.connect(firstN.getKey(), secondN.getKey(),Double.MAX_VALUE);
+
+			} catch (Exception e2) {
+				System.out.println(e2);
+			}
 		}
 		addEBClicked = false;
 		//firstN.getData().setBorderColor(myColor);
-		nodesSelected.remove(firstN);
-		nodesSelected.remove(secondN);
+		nodesSelected.remove(firstN.getKey());
+		nodesSelected.remove(secondN.getKey());
 		instructions.setVisible(false);
 		firstN = null;
 		secondN = null;
@@ -365,14 +440,17 @@ public class GraphGUI{
 	    }
 	    // If double-click, editing becomes possible
 	    if ((clickedNode != null) && (e.getClickCount() == 2)) {
-	    	editingNode = clickedNode;
-			int curr_enode_data = editingNode.getKey();
-			enterNodeData.setEnabled(true);
-			enterNodeData.setText(Integer.toString(curr_enode_data));
-	
+	    	try {
+	    		editingNode = clickedNode;
+				int curr_enode_data = editingNode.getKey();
+				enterNodeData.setEnabled(false);
+				enterNodeData.setText(Integer.toString(curr_enode_data));
+			} catch (Exception e2) {
+				// TODO: handle exception
+			}
 			if (nodesSelected.containsKey(editingNode.getKey())) {
 			    //editingNode.getData().setBorderColor(myColor);
-			    nodesSelected.remove(editingNode);
+			    nodesSelected.remove(editingNode.getKey());
 			} else {
 			    //editingNode.getData().setBorderColor(selectColor);
 			    nodesSelected.put(editingNode.getKey(),editingNode);
@@ -382,7 +460,7 @@ public class GraphGUI{
 		removeNodeButton.setEnabled(true);
 		if (nodesSelected.containsKey(clickedNode.getKey())) {
 		    //clickedNode.getData().setBorderColor(myColor);
-		    nodesSelected.remove(clickedNode);
+		    nodesSelected.remove(clickedNode.getKey());
 		} else {
 		    //clickedNode.getData().setBorderColor(selectColor);
 		    nodesSelected.put(clickedNode.getKey(),clickedNode);
@@ -391,60 +469,63 @@ public class GraphGUI{
 	    }
 
 	    // Recognize when an edge is clicked (less than 5px away from line)
-	    for (int u : Graph.getEdges().keySet()) {
-	    	for(int v : Graph.getEdge(u).keySet()){
-	    		int rad = GraphComponent.NODE_RADIUS;
-				double theta = Math.atan2(Graph.getNode(u).getLocation().iy() -Graph.getNode(v).getLocation().iy(),
-						Graph.getNode(u).getLocation().ix() -Graph.getNode(v).getLocation().ix());
-				
-				
-				double edgeX1 = Graph.getNode(v).getLocation().ix() + Math.cos(theta)*rad;
-				double edgeY1 = Graph.getNode(v).getLocation().iy() + Math.sin(theta)*rad;
-				double edgeX2 = Graph.getNode(u).getLocation().ix() - Math.cos(theta)*rad;
-				double edgeY2 = Graph.getNode(u).getLocation().iy() - Math.sin(theta)*rad;
-				double dist = findDist(Graph.getEdge(u).get(v), edgeX1, edgeY1, edgeX2, edgeY2, mouseX, mouseY);
-				if (dist == -1.0) {
-				    dist = Math.abs(mouseY - edgeY1);
-				    if ((dist < 5) && (ordered(edgeX1, mouseX, edgeX2) || ordered(edgeX2, mouseX, edgeX1))) {
-				    	chosenEdge = Graph.getEdge(u).get(v);
-				    }
-				} else if (dist < 5) {
-				    if (ordered(edgeX1, mouseX, edgeX2) || ordered(edgeX2, mouseX, edgeX1)) { 
-						if (ordered(edgeY1, mouseY, edgeY2) || ordered(edgeY2, mouseY, edgeY1)) { 
-						    chosenEdge = Graph.getEdge(u).get(v);
-						}
-				    }
-				}
-	    	}
-	    }
+	    try {
+	    	for (int u : Graph.getEdges().keySet()) {
+		    	for(int v : Graph.getEdge(u).keySet()){
+		    		int rad = GraphComponent.NODE_RADIUS;
+					double theta = Math.atan2(Graph.getNode(u).getLocation().iy() -Graph.getNode(v).getLocation().iy(),
+							Graph.getNode(u).getLocation().ix() -Graph.getNode(v).getLocation().ix());
+					
+					
+					double edgeX1 = Graph.getNode(v).getLocation().ix() + Math.cos(theta)*rad;
+					double edgeY1 = Graph.getNode(v).getLocation().iy() + Math.sin(theta)*rad;
+					double edgeX2 = Graph.getNode(u).getLocation().ix() - Math.cos(theta)*rad;
+					double edgeY2 = Graph.getNode(u).getLocation().iy() - Math.sin(theta)*rad;
+					double dist = findDist(Graph.getEdge(u).get(v), edgeX1, edgeY1, edgeX2, edgeY2, mouseX, mouseY);
+					if (dist == -1.0) {
+					    dist = Math.abs(mouseY - edgeY1);
+					    if ((dist < 5) && (ordered(edgeX1, mouseX, edgeX2) || ordered(edgeX2, mouseX, edgeX1))) {
+					    	chosenEdge = Graph.getEdge(u).get(v);
+					    }
+					} else if (dist < 5) {
+					    if (ordered(edgeX1, mouseX, edgeX2) || ordered(edgeX2, mouseX, edgeX1)) { 
+							if (ordered(edgeY1, mouseY, edgeY2) || ordered(edgeY2, mouseY, edgeY1)) { 
+							    chosenEdge = Graph.getEdge(u).get(v);
+							}
+					    }
+					}
+		    	}
+		    }
+		} catch (Exception e2) {
+			// TODO: handle exception
+		}
 	    // If double-click, editing becomes possible
-	    if ((chosenEdge != null) && (e.getClickCount() == 2)) {
+	    if ((chosenEdge != null) && (e.getClickCount() == 1)) {
 			editingEdge = chosenEdge;
 			double curr_eedge_data = editingEdge.getWeight();
 			enterEdgeData.setEnabled(true);
 			enterEdgeData.setText(Double.toString(curr_eedge_data));
-	
-			if (edgesSelected.get(chosenEdge.getSrc()).containsValue(chosenEdge)) {
-			    edgesSelected.remove(chosenEdge);
-			} else {
-			    edgesSelected.get(chosenEdge.getSrc()).put(chosenEdge.getSrc(),Graph.getEdge(chosenEdge.getSrc()).get(chosenEdge.getDest()));
+			if(edgesSelected.containsKey(chosenEdge.getSrc())) {
+				if (edgesSelected.get(chosenEdge.getSrc()).containsValue(chosenEdge)) {
+				    edgesSelected.remove(chosenEdge.getSrc());
+				} else {
+				    edgesSelected.get(chosenEdge.getSrc()).put(chosenEdge.getSrc(),Graph.getEdge(chosenEdge.getSrc()).get(chosenEdge.getDest()));
+				}
 			}
 			graphComponent.repaint();
 	    } else if (chosenEdge != null) {
-		removeEdgeButton.setEnabled(true);
-		if (edgesSelected.containsValue(chosenEdge)) {
-		    edgesSelected.remove(chosenEdge);
+		//removeEdgeButton.setEnabled(false);
+		if (edgesSelected.containsKey(chosenEdge.getSrc())) {
+		    edgesSelected.remove(chosenEdge.getSrc());
 		} else {
-			edgesSelected.get(chosenEdge.getSrc()).put(chosenEdge.getDest(),Graph.getEdge(chosenEdge.getSrc()).get(chosenEdge.getDest()));
+			try {
+				edgesSelected.get(chosenEdge.getSrc()).put(chosenEdge.getDest(),Graph.getEdge(chosenEdge.getSrc()).get(chosenEdge.getDest()));
+			} catch (Exception e2) {
+				// TODO: handle exception
+			}
 		}
 		graphComponent.repaint();
 	    }
-	}
-
-	private double findDist(Edge edge, double edgeX1, double edgeY1, double edgeX2, double edgeY2, double mouseX,
-			double mouseY) {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 
 	public void mouseMoved(MouseEvent e) {
@@ -452,69 +533,31 @@ public class GraphGUI{
 	    double mouseY = e.getY();
 	    	    	
 	    if (nodesSelected.size() == 0) {
-		removeNodeButton.setEnabled(false);
+	    	removeNodeButton.setEnabled(false);
 	    }
 	    if (edgesSelected.size() == 0) {
-		removeEdgeButton.setEnabled(false);
+	    	//removeEdgeButton.setEnabled(false);
 	    }
 	    
 	    // Recognize when a node is moused-over
 	    for (int node : Graph.getNodes().keySet()) {
 			double nodeX = Graph.getNode(node).getLocation().x();
 			double nodeY = Graph.getNode(node).getLocation().y();
-//			if (Math.sqrt((nodeX-mouseX)*(nodeX-mouseX)
-//				      +(nodeY-mouseY)*(nodeY-mouseY))
-//			    <= graphComponent.NODE_RADIUS) {
-//			    //node.getData().setBorderColor(selectColor);
-//			} else if (!nodesSelected.contains(node)) {
-//			    //node.getData().setBorderColor(myColor);
-//			}
+			if (Math.sqrt((nodeX-mouseX)*(nodeX-mouseX)
+				      +(nodeY-mouseY)*(nodeY-mouseY))
+			    <= graphComponent.NODE_RADIUS) {
+				 Graph.getNodes().get(node).setTag(1);
+			} else if (!nodesSelected.containsKey(node)) {
+				Graph.getNodes().get(node).setTag(0);
+			}
 			graphComponent.repaint();
 	    }
 	}
 	
     }
-  
+    
     private void initializeGraph() {
-//	Graph.Node<PlacedData<Integer>, Integer> node1 = graph.addNode(new PlacedData<Integer>(1, 50, 50));
-//	Graph.Node<PlacedData<Integer>, Integer> node2 = graph.addNode(new PlacedData<Integer>(2, 150, 50));
-//	Graph.Node<PlacedData<Integer>, Integer> node3 = graph.addNode(new PlacedData<Integer>(3, 150, 250));
-//	Graph.Node<PlacedData<Integer>, Integer> node4 = graph.addNode(new PlacedData<Integer>(4, 50, 150));
-//	Graph.Node<PlacedData<Integer>, Integer> node5 = graph.addNode(new PlacedData<Integer>(5, 250, 50));
-//	Graph.Node<PlacedData<Integer>, Integer> node6 = graph.addNode(new PlacedData<Integer>(6, 175, 100));
-//	Graph.Node<PlacedData<Integer>, Integer> node7 = graph.addNode(new PlacedData<Integer>(7, 250, 150));
-//	Graph.Edge<PlacedData<Integer>, Integer> edge1 = graph.addEdge(1, node1, node2);
-//	Graph.Edge<PlacedData<Integer>, Integer> edge2 = graph.addEdge(2, node1, node3);
-//	Graph.Edge<PlacedData<Integer>, Integer> edge3 = graph.addEdge(3, node2, node4);
-//	Graph.Edge<PlacedData<Integer>, Integer> edge4 = graph.addEdge(4, node2, node5);
-//	Graph.Edge<PlacedData<Integer>, Integer> edge5 = graph.addEdge(5, node3, node6);
-//	Graph.Edge<PlacedData<Integer>, Integer> edge6 = graph.addEdge(6, node3, node7);
-//	Graph.Edge<PlacedData<Integer>, Integer> edge7 = graph.addEdge(7, node3, node1);
 	//System.out.println(Graph.validateGraph());
-	System.out.println(Graph.toString());
+	//System.out.println(Graph.toString());
     }
-
-
-//    private class NodeProcessor implements Graph.Processor<PlacedData<Integer>, Integer> {
-//	public boolean processEdge(Graph.Edge<PlacedData<Integer>, Integer> edge) {
-//	    // do nothing
-//	    return false;
-//	}
-//
-//	public boolean preProcessNode(Graph.Node<PlacedData<Integer>, Integer> node) {
-//	    System.out.println("p");
-//	    node.getData().setColor(java.awt.Color.red);
-//	    graphComponent.repaint();
-//	    try {
-//		Thread.sleep(1000);
-//	    } catch (Exception e) {
-//	    }
-//	    return false;
-//	}
-//
-//	public boolean postProcessNode(Graph.Node<PlacedData<Integer>, Integer> node) {
-//	    // do nothing
-//	    return false;
-//	}
-//    }
 }
