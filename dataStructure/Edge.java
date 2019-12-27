@@ -32,6 +32,9 @@ public class Edge implements edge_data, Serializable{
 	public double getWeight() {
 		return this.weight;
 	}
+	public void setWeight(double w) {
+		this.weight = w;
+	}
 	@Override
 	public String getInfo() {
 		return this.Info;
