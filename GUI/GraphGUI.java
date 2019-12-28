@@ -113,230 +113,244 @@ public class GraphGUI{
      *  @param pane the frame to which to add them
      */
     public void createComponents(Container pane) {
-	pane.add(this.graphComponent);
-	MyMouseListener ml = new MyMouseListener();
-	this.graphComponent.addMouseListener(ml);
-	this.graphComponent.addMouseMotionListener(ml);
-	JPanel panel = new JPanel();
-	panel.setLayout(new BorderLayout());
-	JPanel editpanel = new JPanel();
-	editpanel.setLayout(new BorderLayout());
-	JPanel editnodepanel = new JPanel();
-	editnodepanel.setLayout(new FlowLayout());
-	JPanel editedgepanel = new JPanel();
-	editedgepanel.setLayout(new FlowLayout());
-	JPanel isconnected = new JPanel();
-	isconnected.setLayout(new FlowLayout());
-	JPanel shortestsath = new JPanel();
-	shortestsath.setLayout(new FlowLayout());
-	JPanel saveimagepanel = new JPanel();
-	saveimagepanel.setLayout(new FlowLayout());
-	JPanel Load = new JPanel();
-	Load.setLayout(new FlowLayout());
-	JPanel travpanel = new JPanel();
-	travpanel.setLayout(new FlowLayout());
-	JPanel newpanel = new JPanel();
-	newpanel.setLayout(new FlowLayout());
-	
-	
-	JButton LoadFromFile = new JButton("Load");
-	LoadFromFile.addActionListener(new ActionListener(){
-		public void actionPerformed(ActionEvent e) {
-			try {
-				File file = graphComponent.LoadFromFile.getSelectedFile(); 
-				String filename = file.getName();
-				Algo.init(filename);
-				Graph = Algo.Graph;
-				graphComponent.repaint();
-			} catch (Exception e2) {
-				System.out.println("You didn't input a File");
-			}
-		}
-	    });
-	Load.add(LoadFromFile);
-	/*
-	 * save
-	 */
-	JButton SaveToImage = new JButton("Save Image");
-	SaveToImage.addActionListener(new ActionListener(){
-		public void actionPerformed(ActionEvent e) {
-			graphComponent.saveImage("image"+ImageCount,"png");
-			ImageCount++;
-		}
-	    });
-	saveimagepanel.add(SaveToImage);
-	/**
-	 * isconnected.
-	 */
-
-	JLabel connect = new JLabel();
-	newpanel.add(connect);
-	JButton IsConnected = new JButton("IsConnected");
-	IsConnected.addActionListener(new ActionListener(){
-		public void actionPerformed(ActionEvent e) {
-			try {
-				Graph_Algo a = new Graph_Algo();
-				a.init(Graph);
-				if(a.isConnected()) {
-					connect.setText("The Graph is Connected");
-				}
-				if(!a.isConnected()) {
-					connect.setText("The Graph is not Connected");
-				}
-				connect.setVisible(true);
-				System.out.println(a.isConnected());
-			} catch (Exception e2) {}
-
-		}
-	    });
-	connect.setVisible(false);
-	isconnected.add(IsConnected);
-
-	/*
-	 *ShortestPath ,shortestsath
-	 */
-	JButton ShortestPath = new JButton("ShortestPath");
-	ShortestPath.addActionListener(new ActionListener(){
-		public void actionPerformed(ActionEvent e) {
-			Graph_Algo s = new Graph_Algo();
-			s.init(Graph);
-			//add comment to select first node.
-			try {
-				Node src;
-				Node dest;
-				nodesSelected.keySet();
-				Object[] arr = nodesSelected.keySet().toArray();
-				src = nodesSelected.get(arr[0]);
-				dest = nodesSelected.get(arr[1]);
-				List<node_data> Path = s.shortestPath(src.getKey(),dest.getKey());
-				for(int i = 0; i<Path.size(); i++) {
-					Graph.getEdge(Path.get(i).getKey()).get(Path.get(i+1).getKey()).setTag(1);
+		pane.add(this.graphComponent);
+		MyMouseListener ml = new MyMouseListener();
+		this.graphComponent.addMouseListener(ml);
+		this.graphComponent.addMouseMotionListener(ml);
+		JPanel panel = new JPanel();
+		panel.setLayout(new BorderLayout());
+		JPanel editpanel = new JPanel();
+		editpanel.setLayout(new BorderLayout());
+		JPanel tsp = new JPanel();
+		tsp.setLayout(new BorderLayout());
+		JPanel editnodepanel = new JPanel();
+		editnodepanel.setLayout(new FlowLayout());
+		JPanel editedgepanel = new JPanel();
+		editedgepanel.setLayout(new FlowLayout());
+		JPanel isconnected = new JPanel();
+		isconnected.setLayout(new FlowLayout());
+		JPanel shortestpath = new JPanel();
+		shortestpath.setLayout(new FlowLayout());
+		JPanel saveimagepanel = new JPanel();
+		saveimagepanel.setLayout(new FlowLayout());
+		JPanel Load = new JPanel();
+		Load.setLayout(new FlowLayout());
+		JPanel travpanel = new JPanel();
+		travpanel.setLayout(new FlowLayout());
+		JPanel newpanel = new JPanel();
+		newpanel.setLayout(new FlowLayout());
+		
+		
+		JButton LoadFromFile = new JButton("Load");
+		LoadFromFile.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e) {
+				try {
+					File file = graphComponent.LoadFromFile.getSelectedFile(); 
+					String filename = file.getName();
+					Algo.init(filename);
+					Graph = Algo.Graph;
+				} catch (Exception e2) {
+					System.out.println("You didn't input a File");
 				}
 				graphComponent.repaint();
-			} catch (Exception e2) {
-				
+
 			}
-		}
-	    });
-	shortestsath.add(ShortestPath);
+		    });
+		Load.add(LoadFromFile);
+		/*
+		 * save
+		 */
+		JButton SaveToImage = new JButton("Save Image");
+		SaveToImage.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e) {
+				graphComponent.saveImage("image"+ImageCount,"png");
+				ImageCount++;
+			}
+		    });
+		saveimagepanel.add(SaveToImage);
+		/**
+		 * isconnected.
+		 */
+		
+		JLabel connect = new JLabel();
+		newpanel.add(connect);
+		JButton IsConnected = new JButton("IsConnected");
+		IsConnected.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e) {
+				try {
+					Graph_Algo a = new Graph_Algo();
+					a.init(Graph);
+					if(a.isConnected()) {
+						connect.setText("The Graph is Connected");
+					}
+					if(!a.isConnected()) {
+						connect.setText("The Graph is not Connected");
+					}
+					connect.setVisible(true);
+					System.out.println(a.isConnected());
+				} catch (Exception e2) {}
 	
-	/*
-	 * 
-	 */
-	JButton addNodeButton = new JButton("Add Node");
-	addNodeButton.addActionListener(new ActionListener(){
-		public void actionPerformed(ActionEvent e) {
-			//PlacedData<Integer>(0, 80, 275)
-		    Graph.addNode(new Node(Counter,0,new Point3D(80,275,0),""));
-		    Counter++;
-		    graphComponent.repaint();
-		}
-	    });
-	editnodepanel.add(addNodeButton);
+			}
+		    });
+		connect.setVisible(false);
+		isconnected.add(IsConnected);
 	
-	removeNodeButton = new JButton("Remove Node(s)");
-	removeNodeButton.setEnabled(false);
-	removeNodeButton.addActionListener(new ActionListener(){
-		public void actionPerformed(ActionEvent e) {
-			try {
-				HashMap<Integer, Node> toRemoveNodes = new HashMap<Integer, Node>();
-			    for (int node : nodesSelected.keySet()) {
-					if(Graph.getNodes().containsKey(node)) {
-						Graph.removeNode(node);
-						toRemoveNodes.put(node,(Node) Graph.getNodes().get(node));
+		/*
+		 *ShortestPath ,shortestsath
+		 */
+		JButton ShortestPath = new JButton("ShortestPath");
+		ShortestPath.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e) {
+				Graph_Algo s = new Graph_Algo();
+				s.init(Graph);
+				//add comment to select first node.
+				try {
+					Node src;
+					Node dest;
+					nodesSelected.keySet();
+					Object[] arr = nodesSelected.keySet().toArray();
+					src = nodesSelected.get(arr[0]);
+					dest = nodesSelected.get(arr[1]);
+					List<node_data> Path = s.shortestPath(src.getKey(),dest.getKey());
+					for(int i = 0; i<Path.size(); i++) {
+						if(i != Path.size()-1) {
+							Graph.getEdge(Path.get(i).getKey()).get(Path.get(i+1).getKey()).setTag(1);
+						}
+					}
+					graphComponent.repaint();
+				} catch (Exception e2) {
+					
+				}
+			}
+		    });
+		shortestpath.add(ShortestPath);
+		/*
+		 * TSP 
+		 */
+		JButton TSP = new JButton("TSP");
+		TSP.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e) {
+				graphComponent.saveImage("image"+ImageCount,"png");
+				ImageCount++;
+			}
+		    });
+		tsp.add(TSP);
+		/*
+		 * 
+		 */
+		JButton addNodeButton = new JButton("Add Node");
+		addNodeButton.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e) {
+				//PlacedData<Integer>(0, 80, 275)
+			    Graph.addNode(new Node(Counter,0,new Point3D(80,275,0),""));
+			    Counter++;
+			    graphComponent.repaint();
+			}
+		    });
+		editnodepanel.add(addNodeButton);
+		
+//		removeNodeButton = new JButton("Remove Node(s)");
+//		removeNodeButton.setEnabled(false);
+//		removeNodeButton.addActionListener(new ActionListener(){
+//			public void actionPerformed(ActionEvent e) {
+//				try {
+//				    for (int node : nodesSelected.keySet()) {
+//						if(Graph.getNodes().containsKey(node)) {
+//							Graph.removeNode(node);
+////							toRemoveNodes.put(node,(Node) Graph.getNodes().get(node));
+//					    	nodesSelected.remove(node);
+//
+//						}
+//				    }
+//				    enterEdgeData.setText("");
+//				    removeNodeButton.setEnabled(false);
+//				    chosenEdge = null;
+//				    graphComponent.repaint();
+//				} catch (Exception e2) {
+//					System.out.println(e2);			
+//				}
+//				
+//			}
+//		    });
+//		editnodepanel.add(removeNodeButton);
+		instructions = new JLabel("Select the tail node.");
+		newpanel.add(instructions);
+		instructions.setVisible(false);
+		JButton addEdgeButton = new JButton("Add Edge");
+		addEdgeButton.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e) {
+			    try {
+			    	addEBClicked = true;
+			    	connect.setVisible(false);
+				    instructions.setVisible(true);
+				} catch (Exception e2) {
+					
+				}
+			}
+		    });
+		editedgepanel.add(addEdgeButton);
+//		removeEdgeButton = new JButton("Remove Edge(s)");
+//		removeEdgeButton.setEnabled(true);
+//		removeEdgeButton.addActionListener(new ActionListener(){
+//			public void actionPerformed(ActionEvent e) {
+//			    for (int u : edgesSelected.keySet()) {
+//			    	for(int v : edgesSelected.get(u).keySet()) {
+//						Graph.removeEdge(u,v);
+//						edgesSelected.get(u).remove(v);
+//			    	}
+//			    }
+//			    enterEdgeData.setText("");
+//			    removeEdgeButton.setEnabled(false);
+//			    graphComponent.repaint();
+//			}
+//		    });
+//		editedgepanel.add(removeEdgeButton);
+		JLabel editEdgeLabel = new JLabel("Edit edge data: ");
+		editedgepanel.add(editEdgeLabel);
+		enterEdgeData = new JTextField(2);
+		enterEdgeData.setEnabled(true);
+		enterEdgeData.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e) {
+			    String newEdgeData = enterEdgeData.getText();
+			    if (newEdgeData.length() != 0) {
+			    	try {
+			    		if(editingEdge != null) {
+					    	editingEdge.setWeight(Double.valueOf(newEdgeData));
+				    	}
+					} catch (Exception e2) {
+						System.out.println(e2);
 					}
 			    }
-			    for(int node : toRemoveNodes.keySet()) {
-			    	nodesSelected.remove(node);
-			    }
 			    enterEdgeData.setText("");
-			    removeNodeButton.setEnabled(false);
-			    
+			    enterEdgeData.setEnabled(false);
 			    graphComponent.repaint();
-			} catch (Exception e2) {
-				System.out.println(e2);			
 			}
-			
-		}
-	    });
-	editnodepanel.add(removeNodeButton);
-	instructions = new JLabel("Select the tail node.");
-	newpanel.add(instructions);
-	instructions.setVisible(false);
-	JButton addEdgeButton = new JButton("Add Edge");
-	addEdgeButton.addActionListener(new ActionListener(){
-		public void actionPerformed(ActionEvent e) {
-		    try {
-		    	addEBClicked = true;
-		    	connect.setVisible(false);
-			    instructions.setVisible(true);
-			} catch (Exception e2) {
-				
-			}
-		}
-	    });
-	editedgepanel.add(addEdgeButton);
-//	removeEdgeButton = new JButton("Remove Edge(s)");
-//	removeEdgeButton.setEnabled(false);
-//	removeEdgeButton.addActionListener(new ActionListener(){
-//		public void actionPerformed(ActionEvent e) {
-//		    for (int u : edgesSelected.keySet()) {
-//		    	for(int v : edgesSelected.get(u).keySet()) {
-//					Graph.removeEdge(u,v);
-//					edgesSelected.get(u).remove(v);
-//		    	}
-//		    }
-//		    enterEdgeData.setText("");
-//		    removeEdgeButton.setEnabled(false);
-//		    graphComponent.repaint();
-//		}
-//	    });
-//	editedgepanel.add(removeEdgeButton);
-	JLabel editEdgeLabel = new JLabel("Edit edge data: ");
-	editedgepanel.add(editEdgeLabel);
-	enterEdgeData = new JTextField(2);
-	enterEdgeData.setEnabled(true);
-	enterEdgeData.addActionListener(new ActionListener(){
-		public void actionPerformed(ActionEvent e) {
-		    String newEdgeData = enterEdgeData.getText();
-		    if (newEdgeData.length() != 0) {
-		    	try {
-		    		if(editingEdge != null) {
-				    	editingEdge.setWeight(Double.valueOf(newEdgeData));
-			    	}
-				} catch (Exception e2) {
-					System.out.println(e2);
-				}
-		    }
-		    enterEdgeData.setText("");
-		    enterEdgeData.setEnabled(false);
-		    graphComponent.repaint();
-		}
-	    });
-	
-	editedgepanel.add(enterEdgeData);
-	// Components of the traversal panel: 
-//	JButton resetButton = new JButton("Reset");
-//	resetButton.addActionListener(new ActionListener(){
-//		public void actionPerformed(ActionEvent e) {
-//		    for(int v : Graph.getNodes().keySet()) {
-//		    	Graph.removeNode(v);
-//		    }
-//		    graphComponent.repaint();
-//		}
-//	    });
-//	travpanel.add(resetButton);
-	
-	editpanel.add(isconnected, BorderLayout.EAST);
-	editpanel.add(editnodepanel, BorderLayout.NORTH);
-	editpanel.add(editedgepanel, BorderLayout.SOUTH);
-	editpanel.add(saveimagepanel, BorderLayout.CENTER);
-	panel.add(shortestsath, BorderLayout.EAST);
-	editpanel.add(Load, BorderLayout.WEST);
-	panel.add(editpanel, BorderLayout.NORTH);
-	panel.add(travpanel, BorderLayout.SOUTH);
-	pane.add(newpanel, BorderLayout.NORTH);
-	pane.add(panel, BorderLayout.SOUTH);
+		    });
+		
+		editedgepanel.add(enterEdgeData);
+		// Components of the traversal panel: 
+	//	JButton resetButton = new JButton("Reset");
+	//	resetButton.addActionListener(new ActionListener(){
+	//		public void actionPerformed(ActionEvent e) {
+	//		    for(int v : Graph.getNodes().keySet()) {
+	//		    	Graph.removeNode(v);
+	//		    }
+	//		    graphComponent.repaint();
+	//		}
+	//	    });
+	//	travpanel.add(resetButton);
+		
+		editpanel.add(isconnected, BorderLayout.EAST);
+		editpanel.add(editnodepanel, BorderLayout.NORTH);
+		editpanel.add(editedgepanel, BorderLayout.SOUTH);
+		editpanel.add(saveimagepanel, BorderLayout.CENTER);
+		panel.add(shortestpath, BorderLayout.EAST);
+		panel.add(tsp,BorderLayout.WEST);
+		panel.add(Load, BorderLayout.CENTER);
+		panel.add(editpanel, BorderLayout.NORTH);
+		panel.add(travpanel, BorderLayout.SOUTH);
+		pane.add(newpanel, BorderLayout.NORTH);
+		pane.add(panel, BorderLayout.SOUTH);
     }
 
     /**
@@ -476,7 +490,7 @@ public class GraphGUI{
 		int edata = Graph.getEdges().size() + 1;
 		if (firstN != secondN) {
 			try {
-			    Graph.connect(firstN.getKey(), secondN.getKey(),Double.MAX_VALUE);
+			    Graph.connect(firstN.getKey(), secondN.getKey(),0.0);
 
 			} catch (Exception e2) {
 				System.out.println(e2);
@@ -513,7 +527,7 @@ public class GraphGUI{
 	    	try {
 	    		editingNode = clickedNode;
 				int curr_enode_data = editingNode.getKey();
-				enterNodeData.setEnabled(false);
+				//enterNodeData.setEnabled(false);
 				enterNodeData.setText(Integer.toString(curr_enode_data));
 			} catch (Exception e2) {
 				// TODO: handle exception
@@ -527,15 +541,15 @@ public class GraphGUI{
 			}
 			graphComponent.repaint();
 	    } else if (clickedNode != null) {
-		removeNodeButton.setEnabled(true);
-		if (nodesSelected.containsKey(clickedNode.getKey())) {
-		    //clickedNode.getData().setBorderColor(myColor);
-		    nodesSelected.remove(clickedNode.getKey());
-		} else {
-		    //clickedNode.getData().setBorderColor(selectColor);
-		    nodesSelected.put(clickedNode.getKey(),clickedNode);
-		}
-		graphComponent.repaint();
+//		removeNodeButton.setEnabled(true);
+			if (nodesSelected.containsKey(clickedNode.getKey())) {
+			    //clickedNode.getData().setBorderColor(myColor);
+			    nodesSelected.remove(clickedNode.getKey());
+			} else {
+			    //clickedNode.getData().setBorderColor(selectColor);
+			    nodesSelected.put(clickedNode.getKey(),clickedNode);
+			}
+			graphComponent.repaint();
 	    }
 
 	    // Recognize when an edge is clicked (less than 5px away from line)
@@ -570,7 +584,7 @@ public class GraphGUI{
 			// TODO: handle exception
 		}
 	    // If double-click, editing becomes possible
-	    if ((chosenEdge != null) && (e.getClickCount() == 1)) {
+	    if ((chosenEdge != null) && (e.getClickCount() == 2)) {
 			editingEdge = chosenEdge;
 			double curr_eedge_data = editingEdge.getWeight();
 			enterEdgeData.setEnabled(true);
@@ -602,8 +616,9 @@ public class GraphGUI{
 	    double mouseX = e.getX();
 	    double mouseY = e.getY();
 	    	    	
+	    
 	    if (nodesSelected.size() == 0) {
-	    	removeNodeButton.setEnabled(false);
+//	    	removeNodeButton.setEnabled(false);
 	    }
 	    if (edgesSelected.size() == 0) {
 	    	//removeEdgeButton.setEnabled(false);
@@ -627,9 +642,6 @@ public class GraphGUI{
     }
     
     private void initializeGraph() {
-	//System.out.println(Graph.validateGraph());
-	//System.out.println(Graph.toString());
-		System.out.println(Graph.getNodes().keySet());
-
+    	
     }
 }
