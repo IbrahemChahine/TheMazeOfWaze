@@ -7,7 +7,7 @@ Authors:  **Ibrahem chahine, Ofir Peller.**
 ## Description
 
 This project is made to create and use  **Graph Theory Algorithms**, in this project the user will be able 
-use the to create graphs with the GUI.
+to create graphs with the GUI.
 
 
 **- In the DGraph class** 
@@ -35,7 +35,7 @@ init(String file_name) - Inits the Project from file.
 isConnected() - Check if the Graph is srongly connected.
 shortestPathDist(int src, int dest) - Returns the Destination of the shortest path from src to dest. 
 shortestPath(int src, int dest) - Returns a list of nodes representing the shortest path from src to dest.
-TSP(List<Integer> targets) - eturns a list of nodes representing the TSP path from the targets.
+TSP(List<Integer> targets) - Returns a list of nodes representing the TSP path from the targets.
 ```
 **- In the GraphGUI class**
 ```
