@@ -13,7 +13,6 @@ import java.io.*;
 import java.lang.*;
 import java.util.*;
 import java.util.List;
-
 public class GraphGUI{
     /** Holds the graph GUI component */
     private GraphComponent graphComponent; 
