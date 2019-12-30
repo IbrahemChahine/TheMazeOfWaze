@@ -18,14 +18,24 @@ public class Node implements node_data, Serializable{
 	private Point3D Location;
 	private String Info;
 	private ArrayList<Node> Neighbors = new ArrayList<Node>();
-	
+	/*
+	 * constructor
+	 */
 	public Node(int key,double weight, Point3D location,String info) {
 		this.key = key;
 		this.weight = weight;
 		this.Location = location;
 		this.Info = info;
 	}
-	
+	/*
+	 * constructor
+	 */
+	public Node(int key, Point3D location,String info) {
+		this.key = key;
+		this.weight = 0;
+		this.Location = location;
+		this.Info = info;
+	}
 	public ArrayList<Node> getNeighbors(){
 		return this.Neighbors;
 	}
@@ -35,26 +45,37 @@ public class Node implements node_data, Serializable{
 	public void clearNeighbors() {
 		this.Neighbors.clear();
 	}
+	/*
+	 * Getter for the key of the node. 
+	 */
 	@Override
 	public int getKey() {
 		return this.key;
 	}
-	
+	/*
+	 * Getter for the Location of the node.
+	 */
 	@Override
 	public Point3D getLocation() {
 		return this.Location;
 	}
-
+	/*
+	 * 	Setter for the Location of the node.
+	 */
 	@Override
 	public void setLocation(Point3D p) {
 		this.Location = p;
 	}
-	
+	/*
+	 * 	Getter for the weight of the node.
+	 */
 	@Override
 	public double getWeight() {
 		return this.weight;
 	}
-	
+	/*
+	 * 	Setter for the weight of the node.
+	 */
 	@Override
 	public void setWeight(double w) {
 		if(w<0) {

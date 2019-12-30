@@ -94,7 +94,7 @@ public class GraphComponent extends JComponent {
 					String sss = ""+String.valueOf((double) this.Graph.getEdge(u).get(v).getWeight());
 					Node p = (Node) this.Graph.getNode(u);
 					Node p2 = (Node) this.Graph.getNode(v);
-					g.setColor(Color.GREEN);
+					//g.setColor(Color.GREEN);
 					g.drawString(sss, 1+(int)((p.getLocation().ix()*0.7)+(0.3*p2.getLocation().ix())), 
 							(int)((p.getLocation().iy()*0.7)+(0.3*p2.getLocation().iy()))-2);
 //					g.drawString(String.valueOf(this.Graph.getEdge(u).get(v).getWeight()),
@@ -146,7 +146,7 @@ public class GraphComponent extends JComponent {
   }
      
   public void saveImage(String name,String type) {
-		BufferedImage image = new BufferedImage(getWidth(),getHeight(), BufferedImage.TYPE_BYTE_GRAY);
+	  	BufferedImage image = new BufferedImage(getWidth(),getHeight(), BufferedImage.TYPE_3BYTE_BGR);
 		Graphics2D g2 = image.createGraphics();
 		paint(g2);
 		try{

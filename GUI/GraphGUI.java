@@ -2,18 +2,13 @@ package GUI;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-
-import com.sun.corba.se.impl.orbutil.graph.NodeData;
-
 import algorithms.Graph_Algo;
 import dataStructure.DGraph;
 import dataStructure.Edge;
 import dataStructure.Node;
 import dataStructure.graph;
 import dataStructure.node_data;
-import sun.security.x509.AlgIdDSA;
 import utils.Point3D;
-
 import java.io.*;
 import java.lang.*;
 import java.util.*;
@@ -23,7 +18,7 @@ public class GraphGUI{
     /** Holds the graph GUI component */
     private GraphComponent graphComponent; 
     private DGraph Graph;
-    private Graph_Algo Algo;
+    private Graph_Algo Algo = new Graph_Algo();
     /** The window */
     private JFrame frame;
 
@@ -72,6 +67,10 @@ public class GraphGUI{
     /** Label that appears when user adds new edge. */
     JLabel instructions;
 
+    JLabel PathInstructions;
+    
+    boolean PathBool;
+    
     /** Flag telling whether the add edge button has been pressed. */
     public boolean addEBClicked = false;
 
@@ -177,6 +176,7 @@ public class GraphGUI{
 		JButton IsConnected = new JButton("IsConnected");
 		IsConnected.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
+				PraintWhite();
 				try {
 					Graph_Algo a = new Graph_Algo();
 					a.init(Graph);
@@ -198,26 +198,44 @@ public class GraphGUI{
 		/*
 		 *ShortestPath ,shortestsath
 		 */
+//		JButton ShortestPath = new JButton("ShortestPath");
+//		ShortestPath.addActionListener(new ActionListener(){
+//			public void actionPerformed(ActionEvent e) {
+//				Graph_Algo s = new Graph_Algo();
+//				s.init(Graph);
+//				//add comment to select first node.
+//				try {
+//					Node src;
+//					Node dest;
+//					nodesSelected.keySet();
+//					Object[] arr = nodesSelected.keySet().toArray();
+//					src = nodesSelected.get(arr[0]);
+//					dest = nodesSelected.get(arr[1]);
+//					List<node_data> Path = s.shortestPath(src.getKey(),dest.getKey());
+//					for(int i = 0; i<Path.size(); i++) {
+//						if(i != Path.size()-1) {
+//							Graph.getEdge(Path.get(i).getKey()).get(Path.get(i+1).getKey()).setTag(1);
+//						}
+//					}
+//					graphComponent.repaint();
+//				} catch (Exception e2) {
+//					
+//				}
+//			}
+//		    });
+//		shortestpath.add(ShortestPath);
+		PathInstructions = new JLabel("Select the src node");
+		newpanel.add(PathInstructions);
+		PathInstructions.setVisible(false);
 		JButton ShortestPath = new JButton("ShortestPath");
 		ShortestPath.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
-				Graph_Algo s = new Graph_Algo();
-				s.init(Graph);
-				//add comment to select first node.
 				try {
-					Node src;
-					Node dest;
-					nodesSelected.keySet();
-					Object[] arr = nodesSelected.keySet().toArray();
-					src = nodesSelected.get(arr[0]);
-					dest = nodesSelected.get(arr[1]);
-					List<node_data> Path = s.shortestPath(src.getKey(),dest.getKey());
-					for(int i = 0; i<Path.size(); i++) {
-						if(i != Path.size()-1) {
-							Graph.getEdge(Path.get(i).getKey()).get(Path.get(i+1).getKey()).setTag(1);
-						}
-					}
-					graphComponent.repaint();
+					PraintWhite();
+					PathBool = true;
+			    	connect.setVisible(false);
+				    instructions.setVisible(false);
+				    PathInstructions.setVisible(true);
 				} catch (Exception e2) {
 					
 				}
@@ -230,8 +248,7 @@ public class GraphGUI{
 		JButton TSP = new JButton("TSP");
 		TSP.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
-				graphComponent.saveImage("image"+ImageCount,"png");
-				ImageCount++;
+				PraintWhite();
 			}
 		    });
 		tsp.add(TSP);
@@ -242,6 +259,7 @@ public class GraphGUI{
 		addNodeButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
 				//PlacedData<Integer>(0, 80, 275)
+				PraintWhite();
 			    Graph.addNode(new Node(Counter,0,new Point3D(80,275,0),""));
 			    Counter++;
 			    graphComponent.repaint();
@@ -279,6 +297,7 @@ public class GraphGUI{
 		JButton addEdgeButton = new JButton("Add Edge");
 		addEdgeButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
+				PraintWhite();
 			    try {
 			    	addEBClicked = true;
 			    	connect.setVisible(false);
@@ -311,6 +330,7 @@ public class GraphGUI{
 		enterEdgeData.setEnabled(true);
 		enterEdgeData.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
+				PraintWhite();
 			    String newEdgeData = enterEdgeData.getText();
 			    if (newEdgeData.length() != 0) {
 			    	try {
@@ -486,28 +506,61 @@ public class GraphGUI{
 			firstN = chosenNode;
 			instructions.setText("Select the head node.");
 	    } else if ((addEBClicked) && (chosenNode != null) && (firstN != null) && (secondN == null)) {
-	    	secondN = chosenNode;
-		int edata = Graph.getEdges().size() + 1;
-		if (firstN != secondN) {
-			try {
-			    Graph.connect(firstN.getKey(), secondN.getKey(),0.0);
-
-			} catch (Exception e2) {
-				System.out.println(e2);
+			secondN = chosenNode;
+			int edata = Graph.getEdges().size() + 1;
+			if (firstN != secondN) {
+				try {
+				    Graph.connect(firstN.getKey(), secondN.getKey(),0.0);
+			
+				} catch (Exception e2) {
+					System.out.println(e2);
+				}
 			}
-		}
-		addEBClicked = false;
+			addEBClicked = false;
 		//firstN.getData().setBorderColor(myColor);
-		nodesSelected.remove(firstN.getKey());
-		nodesSelected.remove(secondN.getKey());
-
-		instructions.setVisible(false);
-		firstN = null;
-		secondN = null;
-		graphComponent.repaint();
+			nodesSelected.remove(firstN.getKey());
+			nodesSelected.remove(secondN.getKey());
+			
+			instructions.setVisible(false);
+			firstN = null;
+			secondN = null;
+			graphComponent.repaint();
 	    }
+	  //shortest path.
+	    if ((PathBool) && (chosenNode != null) && (firstN == null)) {
+			firstN = chosenNode;
+			PathInstructions.setText("Select the dest node.");
+	    } else if ((PathBool) && (chosenNode != null) && (firstN != null) && (secondN == null)) {
+			secondN = chosenNode;
+			Graph_Algo algo = new Graph_Algo();
+			algo.init(Graph);
+			ArrayList<node_data> path = (ArrayList<node_data>) algo.shortestPath(firstN.getKey(), secondN.getKey());
+			if (firstN != secondN) {
+				try {
+					for(int i = 0; i<path.size(); i++) {
+						if(i<path.size()-1) {
+							Graph.getEdge(path.get(i).getKey()).get(path.get(i+1).getKey()).setTag(1);
+							if(Graph.getEdges().get(path.get(i+1).getKey()).containsKey(path.get(i).getKey())) {
+								Graph.getEdge(path.get(i+1).getKey()).get(path.get(i).getKey()).setTag(1);	
+							}
+							graphComponent.repaint();
+						}
+					}
+				} catch (Exception e2) {
+					System.out.println(e2);
+				}
+			}
+			PathBool = false;
+			nodesSelected.remove(firstN.getKey());
+			nodesSelected.remove(secondN.getKey());			
+			instructions.setVisible(false);
+			firstN = null;
+			secondN = null;
+			graphComponent.repaint();
+	    }
+	  //end.
+	    
 	}
-
 	public void mouseClicked(MouseEvent e) {
 	    double mouseX = e.getX();
 	    double mouseY = e.getY();
@@ -640,7 +693,14 @@ public class GraphGUI{
 	}
 	
     }
-    
+    public void PraintWhite() {
+		for(int u : Graph.getEdges().keySet()) {
+	    	for (int v : Graph.getEdges().get(u).keySet()) {
+				Graph.getEdge(u).get(v).setTag(0);	
+			}
+	    }
+		graphComponent.repaint();
+	}
     private void initializeGraph() {
     	
     }
