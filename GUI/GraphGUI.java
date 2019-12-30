@@ -290,7 +290,7 @@ public class GraphGUI{
 //			}
 //		    });
 //		editnodepanel.add(removeNodeButton);
-		instructions = new JLabel("Select the tail node.");
+		instructions = new JLabel("Select the tail node. And double click on the edge inorder to set the weight in the Set weight.");
 		newpanel.add(instructions);
 		instructions.setVisible(false);
 		JButton addEdgeButton = new JButton("Add Edge");
@@ -323,7 +323,7 @@ public class GraphGUI{
 //			}
 //		    });
 //		editedgepanel.add(removeEdgeButton);
-		JLabel editEdgeLabel = new JLabel("Edit edge data: ");
+		JLabel editEdgeLabel = new JLabel("Set weight: ");
 		editedgepanel.add(editEdgeLabel);
 		enterEdgeData = new JTextField(2);
 		enterEdgeData.setEnabled(true);
@@ -503,7 +503,7 @@ public class GraphGUI{
 	    // Handle user clicking two nodes for the tail and head of a new edge to be added
 	    if ((addEBClicked) && (chosenNode != null) && (firstN == null)) {
 			firstN = chosenNode;
-			instructions.setText("Select the head node.");
+			instructions.setText("Select the head node. And double click on the edge inorder to set the weight in the Set weight");
 	    } else if ((addEBClicked) && (chosenNode != null) && (firstN != null) && (secondN == null)) {
 			secondN = chosenNode;
 			int edata = Graph.getEdges().size() + 1;

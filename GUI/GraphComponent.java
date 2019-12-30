@@ -126,11 +126,11 @@ public class GraphComponent extends JComponent {
         }
         
 	  for (int k : this.Graph.getNodes().keySet()) {
-	    g.setColor(Color.blue);
+	    g.setColor(Color.RED);
 	    g.fillOval(this.Graph.getNode(k).getLocation().ix() - NODE_RADIUS, this.Graph.getNode(k).getLocation().iy() - NODE_RADIUS, 
 	    		NODE_DIAMETER, NODE_DIAMETER);
 	    if(this.Graph.getNodes().get(k).getTag() == 1) {
-	    	g.setColor(Color.RED);
+	    	g.setColor(Color.BLACK);
 		    g.drawOval(this.Graph.getNode(k).getLocation().ix() - NODE_RADIUS, this.Graph.getNode(k).getLocation().iy() - NODE_RADIUS, 
 		    		NODE_DIAMETER, NODE_DIAMETER);
 	    }
