@@ -102,9 +102,15 @@ public class Graph_Algo implements graph_algorithms, Serializable{
 	}
 	@Override
 	public double shortestPathDist(int src, int dest) {
-		List<node_data> temp = shortestPath(src, dest);
-		Node lastNodeInPath = (Node) temp.get(temp.size());
-		return lastNodeInPath.getWeight();
+		try {
+			List<node_data> temp = shortestPath(src, dest);
+			Node lastNodeInPath = (Node) temp.get(temp.size()-1);
+			return lastNodeInPath.getWeight();
+		}
+		catch(Exception e) {
+			return Double.POSITIVE_INFINITY;
+		}
+
 	}
 
 
@@ -173,8 +179,62 @@ public class Graph_Algo implements graph_algorithms, Serializable{
 		return Answer;
 	}
 
+//	@Override
+//	public List<node_data> TSP(List<Integer> targets) {
+//		double minimum = Double.POSITIVE_INFINITY;
+//		ArrayList<Integer> minimumNodeKeyList = new ArrayList<Integer>();
+//		HashMap<Integer, HashMap<Integer,Double>> Distances = new HashMap<Integer, HashMap<Integer,Double>>();
+//		for (int i : targets) {
+//			Distances.put(i, new HashMap<Integer,Double>()); //create a new inner HashMap for each of the targets
+//			for (int j : targets) {
+//				if(i==j) {continue;}
+//				double currentDistance = shortestPathDist(i,j);
+//				Distances.get(i).put(j, currentDistance);
+//			}
+//		}//end calculate all ShortestPath of all targets to each other
+//
+//		for (int i : targets) {
+//			int[] allTargetssBesideBeginningNode = new int[targets.size()-1];
+//			int k = 0;
+//			for (int j: targets) {
+//				if(i!=j) {//if this node isn't the beginning node
+//					allTargetssBesideBeginningNode[k]=j;
+//					k++;
+//				}
+//			}
+//			ArrayList<ArrayList<Integer>> currentPermutations = new ArrayList<ArrayList<Integer>>();
+//			currentPermutations = permuteFatherMethod(allTargetssBesideBeginningNode);
+//			for (ArrayList<Integer> specificPermutation : currentPermutations) {
+//				double currentMinimum = Distances.get(i).get(specificPermutation.get(0)); //add the 1st journey cost
+//				for (int j = 1; j < specificPermutation.size(); j++) {
+//					double addToCurrentMinimum = Distances.get(specificPermutation.get(j-1)).get(specificPermutation.get(j)); //add the next journey
+//					currentMinimum = currentMinimum + addToCurrentMinimum; //add the next journey cost to the total cost
+//				}
+//				if (currentMinimum<minimum) { //test if the now found trip is the cheapest, up till now.
+//					minimum = currentMinimum;
+//					specificPermutation.add(0, i); //add the key of the Node we begin at, to the list.
+//					minimumNodeKeyList = specificPermutation;
+//				}
+//			}//end iterate over permutations of current beginning node
+//		}//end iterate, changing beginning node.
+//		
+//		
+//		List <node_data> answer = new ArrayList<node_data>();
+//		for (int i = 0; i < minimumNodeKeyList.size(); i++) {
+//			answer.add(this.Graph.getNode(minimumNodeKeyList.get(i)));
+//		}
+//		System.out.println(minimum);
+//		System.out.println(answer.toString());
+//		return answer;
+//	}//end TSP
+	
 	@Override
 	public List<node_data> TSP(List<Integer> targets) {
+		if(!this.isConnected()) {//as Instructed by Boaz - if the Graph isn't connected, return null.
+			System.err.println("Graph isn't connected. Returning NULL for TSP");
+			return null;
+		}
+		
 		double minimum = Double.POSITIVE_INFINITY;
 		ArrayList<Integer> minimumNodeKeyList = new ArrayList<Integer>();
 		HashMap<Integer, HashMap<Integer,Double>> Distances = new HashMap<Integer, HashMap<Integer,Double>>();
@@ -186,38 +246,59 @@ public class Graph_Algo implements graph_algorithms, Serializable{
 				Distances.get(i).put(j, currentDistance);
 			}
 		}//end calculate all ShortestPath of all targets to each other
-
-		for (int i : targets) {
-			int[] allTargetssBesideBeginningNode = new int[targets.size()-1];
-			int k = 0;
-			for (int j: targets) {
-				if(i!=j) {//if this node isn't the beginning node
-					allTargetssBesideBeginningNode[k]=j;
-					k++;
-				}
-			}
-			ArrayList<ArrayList<Integer>> currentPermutations = new ArrayList<ArrayList<Integer>>();
-			currentPermutations = permuteFatherMethod(allTargetssBesideBeginningNode);
-			for (ArrayList<Integer> specificPermutation : currentPermutations) {
-				double currentMinimum = Distances.get(i).get(specificPermutation.get(0)); //add the 1st journey cost
-				for (int j = 1; j < specificPermutation.size(); j++) {
-					double addToCurrentMinimum = Distances.get(specificPermutation.get(j-1)).get(specificPermutation.get(j)); //add the next journey
-					currentMinimum = currentMinimum + addToCurrentMinimum; //add the next journey cost to the total cost
-				}
-				if (currentMinimum<minimum) { //test if the now found trip is the cheapest, up till now.
-					minimum = currentMinimum;
-					specificPermutation.add(0, i); //add the key of the Node we begin at, to the list.
-					minimumNodeKeyList = specificPermutation;
-				}
-			}//end iterate over permutations of current beginning node
-		}//end iterate, changing beginning node.
 		
+		int targets_size = targets.size();
+		for (int i = 0; i < targets_size; i++) {//who is the first node in the path
+			double currentPathDistance = 0;
+			int currentPrev = targets.get(i);
+			ArrayList<Integer> CURRENT_targets = new ArrayList<Integer>();
+			ArrayList<Integer> CURRENT_Path = new ArrayList<Integer>();
+			CURRENT_Path.add(currentPrev); //add the beginning node to the current path list
+			for (int j = 0; j < targets_size; j++) { //add all the targets that aren't the 1st node to the current targets list
+				if(i!=j) {CURRENT_targets.add(targets.get(j));}				
+			}
+			
+			while(CURRENT_targets.size()!=0) {//now choose the current minimum shortestPath from the current node to any of those left, until non are left
+				double currentMinimum = Double.POSITIVE_INFINITY;
+				int nextNodeKey = -1;
+				int nextNodeIndex = -1;
+				for (int j = 0; j < CURRENT_targets.size(); j++) {
+					double currentCandidate = Distances.get(currentPrev).get(CURRENT_targets.get(j));
+					if (currentCandidate<=currentMinimum) {
+						currentMinimum = currentCandidate;
+						nextNodeKey = CURRENT_targets.get(j);
+						nextNodeIndex = j;
+					}
+				}
+				if(CURRENT_targets.size() == 1) {
+					currentMinimum = Distances.get(currentPrev).get(CURRENT_targets.get(0));
+					nextNodeKey = CURRENT_targets.get(0);
+					nextNodeIndex = 0;
+				}
+				CURRENT_targets.remove(nextNodeIndex); //remove the chosen next node
+				currentPrev = nextNodeKey; // update who is the next node to travel FROM (the chosen next node)
+				currentPathDistance = currentPathDistance + currentMinimum; //update distance until now
+				CURRENT_Path.add(nextNodeKey);
+			}
+			
+			if (currentPathDistance<minimum) { //if the current path is the shortest - update the minimum path distance and it's the list showing it's path
+				minimum = currentPathDistance;
+				minimumNodeKeyList.clear();
+				for (int p: CURRENT_Path) {
+					minimumNodeKeyList.add(p);
+				}
+			}//end if (currentPathDistance<minimum) 
+		}//end who is the first node in the path
 		
 		List <node_data> answer = new ArrayList<node_data>();
-		for (int i = 0; i < minimumNodeKeyList.size(); i++) {
-			answer.add(this.Graph.getNode(minimumNodeKeyList.get(i)));
+		for (int currentNodeKey : minimumNodeKeyList) {
+			answer.add(this.Graph.getNode(currentNodeKey));
 		}
+		
+		System.out.println(minimum);
+		System.out.println(answer.toString());
 		return answer;
+		
 	}//end TSP
 
 	public ArrayList<ArrayList<Integer>> permuteFatherMethod(int[] arr) {

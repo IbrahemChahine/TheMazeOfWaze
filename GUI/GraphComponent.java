@@ -15,6 +15,7 @@ import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JMenuBar;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.filechooser.FileSystemView;
 
 import dataStructure.DGraph;
 import dataStructure.Node;
@@ -23,7 +24,12 @@ import dataStructure.Node;
  *  A component that draws a picture of a graph.
  */
 public class GraphComponent extends JComponent {
-  /** The radius of the circle to draw for a node. */
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = -4822415017845138079L;
+
+/** The radius of the circle to draw for a node. */
   public static final int NODE_RADIUS = 16;
 
   /** The diameter of the circle to draw for a node. */
@@ -35,7 +41,6 @@ public class GraphComponent extends JComponent {
   /** The angle of the stroke of an arrow head with respect to the line. */
   public static final double ARROW_ANGLE = 9.0*Math.PI/10.0;
   
-  public JFileChooser LoadFromFile;
 
 
   /** 
@@ -54,10 +59,8 @@ public class GraphComponent extends JComponent {
     this.Graph = Graph;
     setMinimumSize(new Dimension(750, 700));
     setPreferredSize(new Dimension(750, 500));
-    LoadFromFile = new JFileChooser();
     //LoadFromFile.setCurrentDirectory("");
-    LoadFromFile.setFileFilter( new FileNameExtensionFilter("Json FIle","json"));
-    JMenuBar File = new JMenuBar();
+    //LoadFromFile.setFileFilter( new FileNameExtensionFilter("Json File","json"));
   }
   
   /**
@@ -130,7 +133,7 @@ public class GraphComponent extends JComponent {
 	    g.fillOval(this.Graph.getNode(k).getLocation().ix() - NODE_RADIUS, this.Graph.getNode(k).getLocation().iy() - NODE_RADIUS, 
 	    		NODE_DIAMETER, NODE_DIAMETER);
 	    if(this.Graph.getNodes().get(k).getTag() == 1) {
-	    	g.setColor(Color.BLACK);
+	    	g.setColor(Color.black);
 		    g.drawOval(this.Graph.getNode(k).getLocation().ix() - NODE_RADIUS, this.Graph.getNode(k).getLocation().iy() - NODE_RADIUS, 
 		    		NODE_DIAMETER, NODE_DIAMETER);
 	    }

@@ -2,6 +2,9 @@ package GUI;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.filechooser.FileSystemView;
+
 import algorithms.Graph_Algo;
 import dataStructure.DGraph;
 import dataStructure.Edge;
@@ -67,8 +70,9 @@ public class GraphGUI{
     JLabel instructions;
 
     JLabel PathInstructions;
-    
+    JLabel TspInstructions;
     boolean PathBool;
+    boolean TspBool;
     
     /** Flag telling whether the add edge button has been pressed. */
     public boolean addEBClicked = false;
@@ -138,23 +142,33 @@ public class GraphGUI{
 		JPanel newpanel = new JPanel();
 		newpanel.setLayout(new FlowLayout());
 		
-		
-		JButton LoadFromFile = new JButton("Load");
-		LoadFromFile.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e) {
-				try {
-					File file = graphComponent.LoadFromFile.getSelectedFile(); 
-					String filename = file.getName();
-					Algo.init(filename);
-					Graph = Algo.Graph;
-				} catch (Exception e2) {
-					System.out.println("You didn't input a File");
-				}
-				graphComponent.repaint();
-
-			}
-		    });
-		Load.add(LoadFromFile);
+//		
+//		JButton LoadFromFile = new JButton("Load");
+//		LoadFromFile.addActionListener(new ActionListener(){
+//			public void actionPerformed(ActionEvent e) {
+//				try {
+//					JFileChooser LoadFromFile2 = new JFileChooser();
+//					LoadFromFile2.setDialogTitle("Choose a file to load");
+//					LoadFromFile2.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+//					int returnVal = LoadFromFile2.showOpenDialog(pane);
+//					File file = LoadFromFile2.getSelectedFile();
+//					if(returnVal == JFileChooser.APPROVE_OPTION) {
+//						String filename = file.getName();
+//						Algo.init(filename);
+//						Graph = Algo.Graph;
+//						for(int u : Algo.Graph.getNodes().keySet()) {
+//							double x = Math.random()*700;
+//							double y = Math.random()*450;
+//							Algo.Graph.getNodes().get(u).setLocation(new Point3D(x,y,0));
+//						}
+//					}
+//					graphComponent = new GraphComponent(Algo.Graph);
+//					graphComponent.repaint();
+//				} catch (Exception e2) {
+//				}
+//			}
+//		    });
+//		Load.add(LoadFromFile);
 		/*
 		 * save
 		 */
@@ -245,9 +259,15 @@ public class GraphGUI{
 		 * TSP 
 		 */
 		JButton TSP = new JButton("TSP");
+		
 		TSP.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
 				PraintWhite();
+				connect.setVisible(false);
+			    instructions.setVisible(false);
+			    TspBool = true;
+			    
+			    
 			}
 		    });
 		tsp.add(TSP);
@@ -257,39 +277,20 @@ public class GraphGUI{
 		JButton addNodeButton = new JButton("Add Node");
 		addNodeButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
-				//PlacedData<Integer>(0, 80, 275)
-				PraintWhite();
-			    Graph.addNode(new Node(Counter,0,new Point3D(80,275,0),""));
-			    Counter++;
-			    graphComponent.repaint();
+				try {
+					PraintWhite();
+					double x = Math.random()*500;
+					double y = Math.random()*250;
+					while(Graph.getNodes().containsKey(Counter)) {
+						Counter++;
+					}
+				    Graph.addNode(new Node(Counter,0,new Point3D(x,y,0),""));
+				    Counter++;
+				    graphComponent.repaint();
+				} catch (Exception e2) {}
 			}
 		    });
 		editnodepanel.add(addNodeButton);
-		
-//		removeNodeButton = new JButton("Remove Node(s)");
-//		removeNodeButton.setEnabled(false);
-//		removeNodeButton.addActionListener(new ActionListener(){
-//			public void actionPerformed(ActionEvent e) {
-//				try {
-//				    for (int node : nodesSelected.keySet()) {
-//						if(Graph.getNodes().containsKey(node)) {
-//							Graph.removeNode(node);
-////							toRemoveNodes.put(node,(Node) Graph.getNodes().get(node));
-//					    	nodesSelected.remove(node);
-//
-//						}
-//				    }
-//				    enterEdgeData.setText("");
-//				    removeNodeButton.setEnabled(false);
-//				    chosenEdge = null;
-//				    graphComponent.repaint();
-//				} catch (Exception e2) {
-//					System.out.println(e2);			
-//				}
-//				
-//			}
-//		    });
-//		editnodepanel.add(removeNodeButton);
 		instructions = new JLabel("Select the tail node. And double click on the edge inorder to set the weight in the Set weight.");
 		newpanel.add(instructions);
 		instructions.setVisible(false);
@@ -307,22 +308,6 @@ public class GraphGUI{
 			}
 		    });
 		editedgepanel.add(addEdgeButton);
-//		removeEdgeButton = new JButton("Remove Edge(s)");
-//		removeEdgeButton.setEnabled(true);
-//		removeEdgeButton.addActionListener(new ActionListener(){
-//			public void actionPerformed(ActionEvent e) {
-//			    for (int u : edgesSelected.keySet()) {
-//			    	for(int v : edgesSelected.get(u).keySet()) {
-//						Graph.removeEdge(u,v);
-//						edgesSelected.get(u).remove(v);
-//			    	}
-//			    }
-//			    enterEdgeData.setText("");
-//			    removeEdgeButton.setEnabled(false);
-//			    graphComponent.repaint();
-//			}
-//		    });
-//		editedgepanel.add(removeEdgeButton);
 		JLabel editEdgeLabel = new JLabel("Set weight: ");
 		editedgepanel.add(editEdgeLabel);
 		enterEdgeData = new JTextField(2);
@@ -532,10 +517,10 @@ public class GraphGUI{
 	    } else if ((PathBool) && (chosenNode != null) && (firstN != null) && (secondN == null)) {
 			secondN = chosenNode;
 			Graph_Algo algo = new Graph_Algo();
-			algo.init(Graph);
-			ArrayList<node_data> path = (ArrayList<node_data>) algo.shortestPath(firstN.getKey(), secondN.getKey());
 			if (firstN != secondN) {
 				try {
+					algo.init(Graph);
+					ArrayList<node_data> path = (ArrayList<node_data>) algo.shortestPath(firstN.getKey(), secondN.getKey());
 					for(int i = 0; i<path.size(); i++) {
 						if(i<path.size()-1) {
 							Graph.getEdge(path.get(i).getKey()).get(path.get(i+1).getKey()).setTag(1);
@@ -557,7 +542,28 @@ public class GraphGUI{
 			secondN = null;
 			graphComponent.repaint();
 	    }
-	  //end.
+	  //TSP.
+	    if(TspBool == true) {
+	    	try {
+	    		Algo.init(Graph);
+		    	ArrayList<Integer> target = new ArrayList<Integer>(); 
+		    	for(int u : nodesSelected.keySet()) {
+		    		target.add(u);
+		    	}
+		    	ArrayList<node_data> targets = (ArrayList<node_data>) Algo.TSP(target);
+		    	for(int i = 0; i<targets.size(); i++) {
+					if(i<targets.size()-1) {
+						Graph.getEdge(targets.get(i).getKey()).get(targets.get(i+1).getKey()).setTag(1);
+						if(Graph.getEdges().get(targets.get(i+1).getKey()).containsKey(targets.get(i).getKey())) {
+							Graph.getEdge(targets.get(i+1).getKey()).get(targets.get(i).getKey()).setTag(1);	
+						}
+						graphComponent.repaint();
+					}
+				}
+		    	TspBool = false;
+				graphComponent.repaint();
+			} catch (Exception e2) {System.out.println(e2);}
+	    }
 	    
 	}
 	public void mouseClicked(MouseEvent e) {

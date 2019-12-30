@@ -23,17 +23,17 @@ public class test {
 //		testGraph.connect(0, 2, 2);
 //		testGraph.connect(1, 3, 100);
 //		testGraph.connect(2, 3, 2);
-		
-		Node first = new Node(0, 0, new Point3D(0, 0), "first");
-		Node second = new Node(1, 0, new Point3D(0, 0), "second");
-		Node third = new Node(2, 0, new Point3D(0, 0), "third");
-		Node fourth = new Node(3, 0, new Point3D(0, 0), "fourth");
-		Node fifth = new Node(4, 0, new Point3D(0, 0), "fifth");
-		Node sixth = new Node(5, 0, new Point3D(0, 0), "sixth");
-		Node seventh = new Node(6, 0, new Point3D(0, 0), "seventh");
-		Node eigth = new Node(7, 0, new Point3D(0, 0), "eigth");
-		Node ninth = new Node(8, 0, new Point3D(0, 0), "ninth");
-		Node tenth = new Node(9, 0, new Point3D(0, 0), "tenth");
+		;
+		Node first = new Node(0, 0, new Point3D(Math.random()*700,Math.random()*450,0), "first");
+		Node second = new Node(1, 0, new Point3D(Math.random()*700,Math.random()*450,0), "second");
+		Node third = new Node(2, 0, new Point3D(Math.random()*700,Math.random()*450,0), "third");
+		Node fourth = new Node(3, 0, new Point3D(Math.random()*700,Math.random()*450,0), "fourth");
+		Node fifth = new Node(4, 0, new Point3D(Math.random()*700,Math.random()*450,0), "fifth");
+		Node sixth = new Node(5, 0, new Point3D(Math.random()*700,Math.random()*450,0), "sixth");
+		Node seventh = new Node(6, 0, new Point3D(Math.random()*700,Math.random()*450,0), "seventh");
+		Node eigth = new Node(7, 0, new Point3D(Math.random()*700,Math.random()*450,0), "eigth");
+		Node ninth = new Node(8, 0, new Point3D(Math.random()*700,Math.random()*450,0), "ninth");
+		Node tenth = new Node(9, 0, new Point3D(Math.random()*700,Math.random()*450,0), "tenth");
 		Node eleventh = new Node(10, 0, new Point3D(0, 0), "eleventh");
 
 		
@@ -82,11 +82,10 @@ public class test {
 			else {System.out.println(temp.getKey());}
 		}
 //	
-//		graphAlgoTest.save("testSaveFile");
-//		
-//		Graph_Algo graphAlgoTest2 = new Graph_Algo();
-//		graphAlgoTest.init("testSaveFile");
-//		System.out.println("hello");
+		graphAlgoTest.save("testSaveFile");
+		Graph_Algo graphAlgoTest2 = new Graph_Algo();
+		graphAlgoTest.init("testSaveFile");
+		System.out.println("hello");
 
 		
 		
