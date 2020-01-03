@@ -41,7 +41,7 @@ public class GraphComponent extends JComponent {
   /** The angle of the stroke of an arrow head with respect to the line. */
   public static final double ARROW_ANGLE = 9.0*Math.PI/10.0;
   
-
+  
 
   /** 
    *  The graph to draw.  Note that this graph is based on PlacedData,
@@ -57,7 +57,7 @@ public class GraphComponent extends JComponent {
    */
   public GraphComponent(DGraph Graph) {
     this.Graph = Graph;
-    setMinimumSize(new Dimension(750, 700));
+    setMinimumSize(new Dimension(500, 500));
     setPreferredSize(new Dimension(750, 500));
     //LoadFromFile.setCurrentDirectory("");
     //LoadFromFile.setFileFilter( new FileNameExtensionFilter("Json File","json"));
@@ -68,11 +68,19 @@ public class GraphComponent extends JComponent {
    *
    *  @param g the graphics context in which to render
    */
+  public void setdraw() {
+	  for (int u : this.Graph.getEdges().keySet()) {
+	    	for(int v : this.Graph.getEdge(u).keySet()) {
+	    		this.Graph.getEdge(u).get(v).setDraw(false);
+	    	}
+	  }
+  }
   public void paint(Graphics g) {
+	  	setdraw();
         for (int u : this.Graph.getEdges().keySet()) {
 	    	for(int v : this.Graph.getEdge(u).keySet()) {
-				
 				try {
+					this.Graph.getEdge(u).get(v).setDraw(true);
 					int x1 = this.Graph.getNode(u).getLocation().ix();
 					int y1 = this.Graph.getNode(u).getLocation().iy();
 					int x2 = this.Graph.getNode(v).getLocation().ix();
@@ -80,11 +88,24 @@ public class GraphComponent extends JComponent {
 					double theta = Math.atan2(y2 - y1, x2 - x1);  // angle of edge's arrow
 					//
 					// line
-					double edgeX1 = x1 + Math.cos(theta)*NODE_RADIUS;
-					double edgeY1 = y1 + Math.sin(theta)*NODE_RADIUS;
-					double edgeX2 = x2 - Math.cos(theta)*NODE_RADIUS;
-					double edgeY2 = y2 - Math.sin(theta)*NODE_RADIUS;
+					double edgeX1 = x1 + Math.cos(theta)*NODE_RADIUS+1;
+					double edgeY1 = y1 + Math.sin(theta)*NODE_RADIUS+1;
+					double edgeX2 = x2 - Math.cos(theta)*NODE_RADIUS+1;
+					double edgeY2 = y2 - Math.sin(theta)*NODE_RADIUS+1;
 					// arrow
+					/*
+					 * if(this.Graph.getEdge(v).containsKey(u)) {
+							if(this.Graph.getEdge(v).get(u).getDraw() == true) {
+								g.drawLine((int)Math.round(edgeX1)+10, (int)Math.round(edgeY1)+10, (int)Math.round(edgeX2)+10, (int)Math.round(edgeY2)+10);
+							}
+							else {
+								g.drawLine((int)Math.round(edgeX1)-10, (int)Math.round(edgeY1)-10, (int)Math.round(edgeX2)-10, (int)Math.round(edgeY2)-10);
+							}
+						}
+						else {
+							g.drawLine((int)Math.round(edgeX1)-10, (int)Math.round(edgeY1)-10, (int)Math.round(edgeX2)-10, (int)Math.round(edgeY2)-10);
+						}
+					 */
 					int tag = this.Graph.getEdge(u).get(v).getTag();
 					if(tag == 1) {
 						g.setColor(Color.RED);
@@ -94,6 +115,7 @@ public class GraphComponent extends JComponent {
 						g.setColor(Color.green);
 						g.drawLine((int)Math.round(edgeX1), (int)Math.round(edgeY1), (int)Math.round(edgeX2), (int)Math.round(edgeY2));
 					}
+					g.setColor(Color.red);
 					String sss = ""+String.valueOf((double) this.Graph.getEdge(u).get(v).getWeight());
 					Node p = (Node) this.Graph.getNode(u);
 					Node p2 = (Node) this.Graph.getNode(v);
@@ -104,7 +126,8 @@ public class GraphComponent extends JComponent {
 //							(int)this.Graph.getNode(u).getLocation().ix() - (NODE_RADIUS/4),
 //							(int)this.Graph.getNode(u).getLocation().iy() - (NODE_RADIUS/4));
 					// arrow head
-
+					if(tag == 1) {g.setColor(Color.RED);}
+					else {g.setColor(Color.GREEN);}
 				    double arrowX1 = edgeX2 + Math.cos(theta-ARROW_ANGLE)*ARROW_HEAD_LENGTH;
 				    double arrowY1 = edgeY2 + Math.sin(theta-ARROW_ANGLE)*ARROW_HEAD_LENGTH;
 				    double arrowX2 = edgeX2 + Math.cos(theta+ARROW_ANGLE) * ARROW_HEAD_LENGTH;

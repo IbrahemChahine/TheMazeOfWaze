@@ -1,4 +1,6 @@
 package GUI;
+import static GUI.GraphComponent.NODE_RADIUS;
+
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -22,7 +24,7 @@ public class GraphGUI{
     private DGraph Graph;
     private Graph_Algo Algo = new Graph_Algo();
     /** The window */
-    private JFrame frame;
+    private static JFrame frame;
 
     /** The node last selected by the user. */
     private Node chosenNode;
@@ -66,6 +68,7 @@ public class GraphGUI{
     /** Button to remove selected edge(s). */
     public JButton removeEdgeButton;
 
+    double EdgeWeight = 0;
     /** Label that appears when user adds new edge. */
     JLabel instructions;
 
@@ -83,6 +86,7 @@ public class GraphGUI{
     /** The second of a new edge's nodes.*/
     public Node secondN;
     private int Counter = 0;
+    private boolean windowsOn = false;
     /**
      *  Constructor that builds a completely empty graph.
      */
@@ -98,17 +102,20 @@ public class GraphGUI{
      */
     public void createAndShowGUI() {
 		// Create and set up the window.
-		frame = new JFrame("The Maze Of Waze");
-		
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	
-		// Add components
-		createComponents(frame.getContentPane());
-	
-		// Display the window.
-		frame.pack();
-		frame.setVisible(true);
+    		windowsOn = true;
+    		frame = new JFrame("The Maze Of Waze");
+    		
+    		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    	
+    		// Add components
+    		createComponents(frame.getContentPane());
+    	
+    		// Display the window.
+    		frame.pack();
+    		frame.setVisible(true);
+    	
     }
+
     /**
      *  Create the components and add them to the frame.
      *
@@ -142,33 +149,33 @@ public class GraphGUI{
 		JPanel newpanel = new JPanel();
 		newpanel.setLayout(new FlowLayout());
 		
-//		
-//		JButton LoadFromFile = new JButton("Load");
-//		LoadFromFile.addActionListener(new ActionListener(){
-//			public void actionPerformed(ActionEvent e) {
-//				try {
-//					JFileChooser LoadFromFile2 = new JFileChooser();
-//					LoadFromFile2.setDialogTitle("Choose a file to load");
-//					LoadFromFile2.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-//					int returnVal = LoadFromFile2.showOpenDialog(pane);
-//					File file = LoadFromFile2.getSelectedFile();
-//					if(returnVal == JFileChooser.APPROVE_OPTION) {
-//						String filename = file.getName();
-//						Algo.init(filename);
-//						Graph = Algo.Graph;
-//						for(int u : Algo.Graph.getNodes().keySet()) {
-//							double x = Math.random()*700;
-//							double y = Math.random()*450;
-//							Algo.Graph.getNodes().get(u).setLocation(new Point3D(x,y,0));
-//						}
-//					}
-//					graphComponent = new GraphComponent(Algo.Graph);
-//					graphComponent.repaint();
-//				} catch (Exception e2) {
-//				}
-//			}
-//		    });
-//		Load.add(LoadFromFile);
+		
+		JButton LoadFromFile = new JButton("Load");
+		LoadFromFile.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e) {
+				try {
+					JFileChooser LoadFromFile2 = new JFileChooser();
+					LoadFromFile2.setDialogTitle("Choose a file to load");
+					LoadFromFile2.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+					int returnVal = LoadFromFile2.showOpenDialog(pane);
+					File file = LoadFromFile2.getSelectedFile();
+					if(returnVal == JFileChooser.APPROVE_OPTION) {
+						String filename = file.getName();
+						Algo.init(filename);
+						Graph = Algo.Graph;
+						for(int u : Algo.Graph.getNodes().keySet()) {
+							double x = Math.random()*700;
+							double y = Math.random()*450;
+							Algo.Graph.getNodes().get(u).setLocation(new Point3D(x,y,0));
+						}
+					}
+					graphComponent = new GraphComponent(Algo.Graph);
+					graphComponent.repaint();
+				} catch (Exception e2) {
+				}
+			}
+		    });
+		Load.add(LoadFromFile);
 		/*
 		 * save
 		 */
@@ -209,34 +216,8 @@ public class GraphGUI{
 		isconnected.add(IsConnected);
 	
 		/*
-		 *ShortestPath ,shortestsath
+		 *ShortestPath
 		 */
-//		JButton ShortestPath = new JButton("ShortestPath");
-//		ShortestPath.addActionListener(new ActionListener(){
-//			public void actionPerformed(ActionEvent e) {
-//				Graph_Algo s = new Graph_Algo();
-//				s.init(Graph);
-//				//add comment to select first node.
-//				try {
-//					Node src;
-//					Node dest;
-//					nodesSelected.keySet();
-//					Object[] arr = nodesSelected.keySet().toArray();
-//					src = nodesSelected.get(arr[0]);
-//					dest = nodesSelected.get(arr[1]);
-//					List<node_data> Path = s.shortestPath(src.getKey(),dest.getKey());
-//					for(int i = 0; i<Path.size(); i++) {
-//						if(i != Path.size()-1) {
-//							Graph.getEdge(Path.get(i).getKey()).get(Path.get(i+1).getKey()).setTag(1);
-//						}
-//					}
-//					graphComponent.repaint();
-//				} catch (Exception e2) {
-//					
-//				}
-//			}
-//		    });
-//		shortestpath.add(ShortestPath);
 		PathInstructions = new JLabel("Select the src node");
 		newpanel.add(PathInstructions);
 		PathInstructions.setVisible(false);
@@ -259,15 +240,17 @@ public class GraphGUI{
 		 * TSP 
 		 */
 		JButton TSP = new JButton("TSP");
-		
+		TspInstructions = new JLabel("Select the nodes such that the last node you pick will be the starting node then click on tsp again and pick one of the nodes again. ");
+		newpanel.add(TspInstructions);
 		TSP.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
-				PraintWhite();
-				connect.setVisible(false);
-			    instructions.setVisible(false);
-			    TspBool = true;
-			    
-			    
+				try {
+					PraintWhite();
+					TspInstructions.setVisible(true);
+					connect.setVisible(false);
+				    instructions.setVisible(false);
+				    TspBool = true;
+				} catch (Exception e2) {System.out.println(e2);}
 			}
 		    });
 		tsp.add(TSP);
@@ -277,6 +260,7 @@ public class GraphGUI{
 		JButton addNodeButton = new JButton("Add Node");
 		addNodeButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
+				TspInstructions.setVisible(false);
 				try {
 					PraintWhite();
 					double x = Math.random()*500;
@@ -291,12 +275,13 @@ public class GraphGUI{
 			}
 		    });
 		editnodepanel.add(addNodeButton);
-		instructions = new JLabel("Select the tail node. And double click on the edge inorder to set the weight in the Set weight.");
+		instructions = new JLabel("set the weight in the Set weight and press enter then Select the src node.");
 		newpanel.add(instructions);
 		instructions.setVisible(false);
 		JButton addEdgeButton = new JButton("Add Edge");
 		addEdgeButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
+				TspInstructions.setVisible(false);
 				PraintWhite();
 			    try {
 			    	addEBClicked = true;
@@ -318,32 +303,21 @@ public class GraphGUI{
 			    String newEdgeData = enterEdgeData.getText();
 			    if (newEdgeData.length() != 0) {
 			    	try {
-			    		if(editingEdge != null) {
-					    	editingEdge.setWeight(Double.valueOf(newEdgeData));
-				    	}
+//			    		if(editingEdge != null) {
+//					    	editingEdge.setWeight(Double.valueOf(newEdgeData));
+//				    	}
+			    		EdgeWeight = Double.valueOf(newEdgeData);
 					} catch (Exception e2) {
 						System.out.println(e2);
 					}
 			    }
 			    enterEdgeData.setText("");
-			    enterEdgeData.setEnabled(false);
+			    enterEdgeData.setEnabled(true);
 			    graphComponent.repaint();
 			}
 		    });
 		
 		editedgepanel.add(enterEdgeData);
-		// Components of the traversal panel: 
-	//	JButton resetButton = new JButton("Reset");
-	//	resetButton.addActionListener(new ActionListener(){
-	//		public void actionPerformed(ActionEvent e) {
-	//		    for(int v : Graph.getNodes().keySet()) {
-	//		    	Graph.removeNode(v);
-	//		    }
-	//		    graphComponent.repaint();
-	//		}
-	//	    });
-	//	travpanel.add(resetButton);
-		
 		editpanel.add(isconnected, BorderLayout.EAST);
 		editpanel.add(editnodepanel, BorderLayout.NORTH);
 		editpanel.add(editedgepanel, BorderLayout.SOUTH);
@@ -373,10 +347,10 @@ public class GraphGUI{
     public void execute() {
 	// Schedule a job for the event-dispatching thread:
 	// creating and showing this application's GUI.
-	javax.swing.SwingUtilities.invokeLater(new Runnable() {
-		public void run() {
-		    createAndShowGUI();
-		}
+    	javax.swing.SwingUtilities.invokeLater(new Runnable() {
+    		public void run() {
+    			createAndShowGUI();
+			}
 	    });
     }
 
@@ -481,27 +455,28 @@ public class GraphGUI{
 			}
 	    }
 	    if (chosenNode != null) {
-			deltaX = chosenNode.getLocation().ix()- e.getX();
+			deltaX = chosenNode.getLocation().ix() - e.getX();
 			deltaY = chosenNode.getLocation().iy() - e.getY();
 	    }
 
 	    // Handle user clicking two nodes for the tail and head of a new edge to be added
 	    if ((addEBClicked) && (chosenNode != null) && (firstN == null)) {
 			firstN = chosenNode;
-			instructions.setText("Select the head node. And double click on the edge inorder to set the weight in the Set weight");
+			instructions.setText("set the weight in the Set weight and press enter then Select the tail node.");
 	    } else if ((addEBClicked) && (chosenNode != null) && (firstN != null) && (secondN == null)) {
 			secondN = chosenNode;
 			int edata = Graph.getEdges().size() + 1;
 			if (firstN != secondN) {
 				try {
-				    Graph.connect(firstN.getKey(), secondN.getKey(),0.0);
+				    Graph.connect(firstN.getKey(), secondN.getKey(),EdgeWeight);
 			
 				} catch (Exception e2) {
 					System.out.println(e2);
 				}
 			}
+			EdgeWeight = 0;
 			addEBClicked = false;
-		//firstN.getData().setBorderColor(myColor);
+		//firstN.getData().setBorderColor(myColor); 
 			nodesSelected.remove(firstN.getKey());
 			nodesSelected.remove(secondN.getKey());
 			
@@ -544,25 +519,44 @@ public class GraphGUI{
 	    }
 	  //TSP.
 	    if(TspBool == true) {
-	    	try {
-	    		Algo.init(Graph);
-		    	ArrayList<Integer> target = new ArrayList<Integer>(); 
-		    	for(int u : nodesSelected.keySet()) {
-		    		target.add(u);
-		    	}
-		    	ArrayList<node_data> targets = (ArrayList<node_data>) Algo.TSP(target);
-		    	for(int i = 0; i<targets.size(); i++) {
-					if(i<targets.size()-1) {
-						Graph.getEdge(targets.get(i).getKey()).get(targets.get(i+1).getKey()).setTag(1);
-						if(Graph.getEdges().get(targets.get(i+1).getKey()).containsKey(targets.get(i).getKey())) {
-							Graph.getEdge(targets.get(i+1).getKey()).get(targets.get(i).getKey()).setTag(1);	
+	    	if(nodesSelected.size() >1) {
+	    		try {
+		    		Algo.init(Graph);
+			    	ArrayList<Integer> target = new ArrayList<Integer>(); 
+			    	for(int u : nodesSelected.keySet()) {
+			    		target.add(u);
+			    	}
+			    	if(Algo.isConnected() == true) {
+			    		ArrayList<node_data> targets = (ArrayList<node_data>) Algo.TSP(target);
+			    		for(int i = 0; i< targets.size(); i++) {
+			    			System.out.println(targets.get(i));
+			    		}
+			    			
+				    	for(int k = 0; k<targets.size(); k++) {
+							if(k<targets.size()-1) {
+								
+								ArrayList<node_data> path = (ArrayList<node_data>)Algo.shortestPath(targets.get(k).getKey(),targets.get(k+1).getKey());
+								for(int i = 0; i<path.size(); i++) {
+									if(i<path.size()-1) {
+										Graph.getEdge(path.get(i).getKey()).get(path.get(i+1).getKey()).setTag(1);
+										if(Graph.getEdges().get(path.get(i+1).getKey()).containsKey(path.get(i).getKey())) {
+											Graph.getEdge(path.get(i+1).getKey()).get(path.get(i).getKey()).setTag(1);	
+										}
+										graphComponent.repaint();
+									}
+								}
+							}
 						}
-						graphComponent.repaint();
-					}
-				}
-		    	TspBool = false;
-				graphComponent.repaint();
-			} catch (Exception e2) {System.out.println(e2);}
+			    	}
+			    	TspBool = false;
+					graphComponent.repaint();
+					TspInstructions.setVisible(false);
+				} catch (Exception e2) {System.out.println(e2);}
+	    	}
+	    	else {
+	    		TspBool = false;
+	    	}
+	    	
 	    }
 	    
 	}
@@ -688,7 +682,7 @@ public class GraphGUI{
 			double nodeY = Graph.getNode(node).getLocation().y();
 			if (Math.sqrt((nodeX-mouseX)*(nodeX-mouseX)
 				      +(nodeY-mouseY)*(nodeY-mouseY))
-			    <= graphComponent.NODE_RADIUS) {
+			    <= NODE_RADIUS) {
 				 Graph.getNodes().get(node).setTag(1);
 			} else if (!nodesSelected.containsKey(node)) {
 				Graph.getNodes().get(node).setTag(0);
@@ -707,6 +701,54 @@ public class GraphGUI{
 		graphComponent.repaint();
 	}
     private void initializeGraph() {
-    	
+//    	Node first = new Node(0, 0, new Point3D(Math.random()*500,Math.random()*450,0), "first");
+//		Node second = new Node(1, 0, new Point3D(Math.random()*500,Math.random()*450,0), "second");
+//		Node third = new Node(2, 0, new Point3D(Math.random()*500,Math.random()*450,0), "third");
+//		Node fourth = new Node(3, 0, new Point3D(Math.random()*500,Math.random()*450,0), "fourth");
+//		Node fifth = new Node(4, 0, new Point3D(Math.random()*500,Math.random()*450,0), "fifth");
+//		Node sixth = new Node(5, 0, new Point3D(Math.random()*500,Math.random()*450,0), "sixth");
+//		Node seventh = new Node(6, 0, new Point3D(Math.random()*500,Math.random()*450,0), "seventh");
+//		Node eigth = new Node(7, 0, new Point3D(Math.random()*500,Math.random()*450,0), "eigth");
+//		Node ninth = new Node(8, 0, new Point3D(Math.random()*500,Math.random()*450,0), "ninth");
+//		Node tenth = new Node(9, 0, new Point3D(Math.random()*500,Math.random()*450,0), "tenth");
+//		Node eleventh = new Node(10, 0, new Point3D(0, 0), "eleventh");
+//		Node twelve = new Node(11, 0, new Point3D(0, 0), "eleventh");
+//		
+//		DGraph testGraph = new DGraph();
+//		testGraph.addNode(first);
+//		testGraph.addNode(second);
+//		testGraph.addNode(third);
+//		testGraph.addNode(fourth);
+//		testGraph.addNode(fifth);
+//		testGraph.addNode(sixth);
+//		testGraph.addNode(seventh);
+//		testGraph.addNode(eigth);
+//		testGraph.addNode(ninth);
+//		testGraph.addNode(tenth);
+//		testGraph.addNode(eleventh);
+//		
+//		testGraph.connect(0, 1, 1);
+//		testGraph.connect(0, 3, 1);
+//		testGraph.connect(0, 4, 1);
+//		
+//		testGraph.connect(1, 2, 1);
+//		
+//		testGraph.connect(2, 10, 1);
+//
+//		
+//		testGraph.connect(3, 5, 2);
+//		
+//		testGraph.connect(4, 6, 5);
+//		testGraph.connect(4, 7, 7);
+//
+//		testGraph.connect(5, 8, 1);
+//		testGraph.connect(5, 9, 3);
+//		
+//		testGraph.connect(7, 10, 2);
+//		
+//		testGraph.connect(9, 10, 5);
+//		Graph = testGraph;
+//		Graph.addNode(twelve);
+		
     }
 }

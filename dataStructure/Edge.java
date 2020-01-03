@@ -13,6 +13,7 @@ public class Edge implements edge_data, Serializable{
 	private int Tag;
 	private double weight;
 	private String Info;
+	private boolean Draw;
 	public Edge(Node src, Node dest, double weight) {
 		this.Src = src;
 		this.Dest = dest;
@@ -54,5 +55,10 @@ public class Edge implements edge_data, Serializable{
 	public void setTag(int t) {
 		this.Tag = t;
 	}
-
+	public void setDraw(boolean bool) {
+		Draw = bool;
+	}
+	public boolean getDraw() {
+		return Draw;
+	}
 }
