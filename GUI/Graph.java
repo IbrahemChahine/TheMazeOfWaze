@@ -1,78 +1,59 @@
 package GUI;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Menu;
-import java.awt.MenuBar;
-import java.awt.MenuItem;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.filechooser.FileSystemView;
-
-
 import algorithms.*;
 import dataStructure.*;
 import utils.*;
 
-/**
- * This class makes a gui window to represent a graph and
- * use the Algorithms from class Graph_Algo on live.
- * (use the methods and represent it on the gui window while it is still up).
- * @author YosefTwito and EldarTakach
- */
-
-public class Graph extends JFrame implements ActionListener, MouseListener{
-
-	@Override
-	public void mouseClicked(MouseEvent arg0) {
-		// TODO Auto-generated method stub
+public class Graph{
+	public static void main(String[] args) {
+		Node first = new Node(0, 0, new Point3D(Math.random()*500,Math.random()*450,0), "first");
+		Node second = new Node(1, 0, new Point3D(Math.random()*500,Math.random()*450,0), "second");
+		Node third = new Node(2, 0, new Point3D(Math.random()*500,Math.random()*450,0), "third");
+		Node fourth = new Node(3, 0, new Point3D(Math.random()*500,Math.random()*450,0), "fourth");
+		Node fifth = new Node(4, 0, new Point3D(Math.random()*500,Math.random()*450,0), "fifth");
+		Node sixth = new Node(5, 0, new Point3D(Math.random()*500,Math.random()*450,0), "sixth");
+		Node seventh = new Node(6, 0, new Point3D(Math.random()*500,Math.random()*450,0), "seventh");
+		Node eigth = new Node(7, 0, new Point3D(Math.random()*500,Math.random()*450,0), "eigth");
+		Node ninth = new Node(8, 0, new Point3D(Math.random()*500,Math.random()*450,0), "ninth");
+		Node tenth = new Node(9, 0, new Point3D(Math.random()*500,Math.random()*450,0), "tenth");
+		Node eleventh = new Node(10, 0, new Point3D(0, 0), "eleventh");
+		Node twelve = new Node(11, 0, new Point3D(0, 0), "eleventh");
 		
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent arg0) {
-		// TODO Auto-generated method stub
+		DGraph testGraph = new DGraph();
+		testGraph.addNode(first);
+		testGraph.addNode(second);
+		testGraph.addNode(third);
+		testGraph.addNode(fourth);
+		testGraph.addNode(fifth);
+		testGraph.addNode(sixth);
+		testGraph.addNode(seventh);
+		testGraph.addNode(eigth);
+		testGraph.addNode(ninth);
+		testGraph.addNode(tenth);
+		testGraph.addNode(eleventh);
 		
-	}
-
-	@Override
-	public void mouseExited(MouseEvent arg0) {
-		// TODO Auto-generated method stub
+		testGraph.connect(0, 1, 1);
+		testGraph.connect(0, 3, 1);
+		testGraph.connect(0, 4, 1);
 		
-	}
-
-	@Override
-	public void mousePressed(MouseEvent arg0) {
-		// TODO Auto-generated method stub
+		testGraph.connect(1, 2, 1);
 		
-	}
+		testGraph.connect(2, 10, 1);
 
-	@Override
-	public void mouseReleased(MouseEvent arg0) {
-		// TODO Auto-generated method stub
 		
-	}
+		testGraph.connect(3, 5, 2);
+		
+		testGraph.connect(4, 6, 5);
+		testGraph.connect(4, 7, 7);
 
-	@Override
-	public void actionPerformed(ActionEvent arg0) {
-		// TODO Auto-generated method stub
+		testGraph.connect(5, 8, 1);
+		testGraph.connect(5, 9, 3);
 		
+		testGraph.connect(7, 10, 2);
+		
+		testGraph.connect(9, 10, 5);
+		GraphGUI gui = new GraphGUI(testGraph);
+		gui.execute();
+		testGraph.addNode(twelve);
 	}
-	
 }

@@ -1,4 +1,4 @@
-package GUI;
+ package GUI;
 import static GUI.GraphComponent.NODE_RADIUS;
 
 import java.awt.*;
@@ -75,8 +75,8 @@ public class GraphGUI{
     JLabel PathInstructions;
     JLabel TspInstructions;
     boolean PathBool;
-    boolean TspBool;
-    
+    boolean TspBool = false;
+    boolean LoadBool = false;
     /** Flag telling whether the add edge button has been pressed. */
     public boolean addEBClicked = false;
 
@@ -86,7 +86,7 @@ public class GraphGUI{
     /** The second of a new edge's nodes.*/
     public Node secondN;
     private int Counter = 0;
-    private boolean windowsOn = false;
+    private static boolean windowsOn = false;
     /**
      *  Constructor that builds a completely empty graph.
      */
@@ -96,7 +96,12 @@ public class GraphGUI{
 		this.ImageCount = 0;
 		this.graphComponent = new GraphComponent(this.Graph);
     }
-
+    public GraphGUI(DGraph g) {
+		this.Graph = g;
+		initializeGraph();
+		this.ImageCount = 0;
+		this.graphComponent = new GraphComponent(g);
+    }
     /**
      *  Create and show the GUI.
      */
@@ -148,8 +153,17 @@ public class GraphGUI{
 		travpanel.setLayout(new FlowLayout());
 		JPanel newpanel = new JPanel();
 		newpanel.setLayout(new FlowLayout());
-		
-		
+		Window window = new Window(frame);
+		frame.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				windowsOn = false;
+			}
+//			@Override
+//			public void windowClosed(WindowEvent e) {
+//			    System.out.println("B has closed");
+//			}
+		});
 		JButton LoadFromFile = new JButton("Load");
 		LoadFromFile.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
@@ -163,16 +177,23 @@ public class GraphGUI{
 						String filename = file.getName();
 						Algo.init(filename);
 						Graph = Algo.Graph;
-						for(int u : Algo.Graph.getNodes().keySet()) {
-							double x = Math.random()*700;
-							double y = Math.random()*450;
-							Algo.Graph.getNodes().get(u).setLocation(new Point3D(x,y,0));
+						int count = 0;
+						for(int u : Graph.getNodes().keySet()) {
+							double x = Math.random()*250+100;
+							double y = Math.random()*250+100;
+							Graph.getNodes().get(u).setLocation(new Point3D(x,y,0));
+							if(count < u) {
+								count = u;
+							}
+							Counter = count + 1;
+							
 						}
+						graphComponent = new GraphComponent(Graph);
+						graphComponent.repaint();
+						execute();
+						LoadBool = true;
 					}
-					graphComponent = new GraphComponent(Algo.Graph);
-					graphComponent.repaint();
-				} catch (Exception e2) {
-				}
+				} catch (Exception e2) {System.out.println(e2);}
 			}
 		    });
 		Load.add(LoadFromFile);
@@ -242,13 +263,14 @@ public class GraphGUI{
 		JButton TSP = new JButton("TSP");
 		TspInstructions = new JLabel("Select the nodes such that the last node you pick will be the starting node then click on tsp again and pick one of the nodes again. ");
 		newpanel.add(TspInstructions);
+		TspInstructions .setVisible(false);
 		TSP.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
 				try {
 					PraintWhite();
-					TspInstructions.setVisible(true);
 					connect.setVisible(false);
 				    instructions.setVisible(false);
+					TspInstructions.setVisible(true);
 				    TspBool = true;
 				} catch (Exception e2) {System.out.println(e2);}
 			}
@@ -263,12 +285,10 @@ public class GraphGUI{
 				TspInstructions.setVisible(false);
 				try {
 					PraintWhite();
-					double x = Math.random()*500;
-					double y = Math.random()*250;
-					while(Graph.getNodes().containsKey(Counter)) {
-						Counter++;
-					}
+					double x = Math.random()*250+100;
+					double y = Math.random()*250+100;
 				    Graph.addNode(new Node(Counter,0,new Point3D(x,y,0),""));
+				    fixCounter(Counter);
 				    Counter++;
 				    graphComponent.repaint();
 				} catch (Exception e2) {}
@@ -303,10 +323,12 @@ public class GraphGUI{
 			    String newEdgeData = enterEdgeData.getText();
 			    if (newEdgeData.length() != 0) {
 			    	try {
-//			    		if(editingEdge != null) {
-//					    	editingEdge.setWeight(Double.valueOf(newEdgeData));
-//				    	}
-			    		EdgeWeight = Double.valueOf(newEdgeData);
+			    		if(addEBClicked == true) {
+				    		EdgeWeight = Double.valueOf(newEdgeData);
+			    		}
+			    		else {
+			    			EdgeWeight = 0;
+			    		}
 					} catch (Exception e2) {
 						System.out.println(e2);
 					}
@@ -349,8 +371,18 @@ public class GraphGUI{
 	// creating and showing this application's GUI.
     	javax.swing.SwingUtilities.invokeLater(new Runnable() {
     		public void run() {
-    			createAndShowGUI();
-			}
+    			try {
+    				if(windowsOn) {
+    					frame.setVisible(false);
+    					createAndShowGUI();
+    				}
+    				else {
+    					windowsOn = true;
+    					createAndShowGUI();
+    				}
+				} catch (Exception e) {System.out.println(e);}
+    			
+    		}
 	    });
     }
 
@@ -425,7 +457,6 @@ public class GraphGUI{
 	    }
 	    graphComponent.repaint();
 	}
-
 	public void mouseReleased(MouseEvent e) {
 	    chosenNode = null;
 	    chosenEdge = null;
@@ -558,6 +589,9 @@ public class GraphGUI{
 	    	}
 	    	
 	    }
+	    if(LoadBool == true) {
+			LoadBool = false;
+	    }
 	    
 	}
 	public void mouseClicked(MouseEvent e) {
@@ -665,32 +699,43 @@ public class GraphGUI{
 	}
 
 	public void mouseMoved(MouseEvent e) {
-	    double mouseX = e.getX();
-	    double mouseY = e.getY();
-	    	    	
-	    
-	    if (nodesSelected.size() == 0) {
-//	    	removeNodeButton.setEnabled(false);
-	    }
-	    if (edgesSelected.size() == 0) {
-	    	//removeEdgeButton.setEnabled(false);
-	    }
-	    
-	    // Recognize when a node is moused-over
-	    for (int node : Graph.getNodes().keySet()) {
-			double nodeX = Graph.getNode(node).getLocation().x();
-			double nodeY = Graph.getNode(node).getLocation().y();
-			if (Math.sqrt((nodeX-mouseX)*(nodeX-mouseX)
-				      +(nodeY-mouseY)*(nodeY-mouseY))
-			    <= NODE_RADIUS) {
-				 Graph.getNodes().get(node).setTag(1);
-			} else if (!nodesSelected.containsKey(node)) {
-				Graph.getNodes().get(node).setTag(0);
+		try {
+			double mouseX = e.getX();
+		    double mouseY = e.getY();
+		    	    	
+		    
+		    if (nodesSelected.size() == 0) {
+//		    	removeNodeButton.setEnabled(false);
+		    }
+		    if (edgesSelected.size() == 0) {
+		    	//removeEdgeButton.setEnabled(false);
+		    }
+		    
+		    // Recognize when a node is moused-over
+		    for (int node : Graph.getNodes().keySet()) {
+				double nodeX = Graph.getNode(node).getLocation().x();
+				double nodeY = Graph.getNode(node).getLocation().y();
+				if (Math.sqrt((nodeX-mouseX)*(nodeX-mouseX)
+					      +(nodeY-mouseY)*(nodeY-mouseY))
+				    <= NODE_RADIUS) {
+					 Graph.getNodes().get(node).setTag(1);
+				} else if (!nodesSelected.containsKey(node)) {
+					Graph.getNodes().get(node).setTag(0);
+				}
+				graphComponent.repaint();
+		    }
+		} catch (Exception e2) {
+			// TODO: handle exception
+		}
+	} 
+    }
+    public void fixCounter(int count) {
+    	for(int u : Graph.getNodes().keySet()) {
+			if(count < u) {
+				count = u;
 			}
-			graphComponent.repaint();
-	    }
-	}
-	
+		}
+		Counter = count + 1;
     }
     public void PraintWhite() {
 		for(int u : Graph.getEdges().keySet()) {
@@ -700,55 +745,5 @@ public class GraphGUI{
 	    }
 		graphComponent.repaint();
 	}
-    private void initializeGraph() {
-//    	Node first = new Node(0, 0, new Point3D(Math.random()*500,Math.random()*450,0), "first");
-//		Node second = new Node(1, 0, new Point3D(Math.random()*500,Math.random()*450,0), "second");
-//		Node third = new Node(2, 0, new Point3D(Math.random()*500,Math.random()*450,0), "third");
-//		Node fourth = new Node(3, 0, new Point3D(Math.random()*500,Math.random()*450,0), "fourth");
-//		Node fifth = new Node(4, 0, new Point3D(Math.random()*500,Math.random()*450,0), "fifth");
-//		Node sixth = new Node(5, 0, new Point3D(Math.random()*500,Math.random()*450,0), "sixth");
-//		Node seventh = new Node(6, 0, new Point3D(Math.random()*500,Math.random()*450,0), "seventh");
-//		Node eigth = new Node(7, 0, new Point3D(Math.random()*500,Math.random()*450,0), "eigth");
-//		Node ninth = new Node(8, 0, new Point3D(Math.random()*500,Math.random()*450,0), "ninth");
-//		Node tenth = new Node(9, 0, new Point3D(Math.random()*500,Math.random()*450,0), "tenth");
-//		Node eleventh = new Node(10, 0, new Point3D(0, 0), "eleventh");
-//		Node twelve = new Node(11, 0, new Point3D(0, 0), "eleventh");
-//		
-//		DGraph testGraph = new DGraph();
-//		testGraph.addNode(first);
-//		testGraph.addNode(second);
-//		testGraph.addNode(third);
-//		testGraph.addNode(fourth);
-//		testGraph.addNode(fifth);
-//		testGraph.addNode(sixth);
-//		testGraph.addNode(seventh);
-//		testGraph.addNode(eigth);
-//		testGraph.addNode(ninth);
-//		testGraph.addNode(tenth);
-//		testGraph.addNode(eleventh);
-//		
-//		testGraph.connect(0, 1, 1);
-//		testGraph.connect(0, 3, 1);
-//		testGraph.connect(0, 4, 1);
-//		
-//		testGraph.connect(1, 2, 1);
-//		
-//		testGraph.connect(2, 10, 1);
-//
-//		
-//		testGraph.connect(3, 5, 2);
-//		
-//		testGraph.connect(4, 6, 5);
-//		testGraph.connect(4, 7, 7);
-//
-//		testGraph.connect(5, 8, 1);
-//		testGraph.connect(5, 9, 3);
-//		
-//		testGraph.connect(7, 10, 2);
-//		
-//		testGraph.connect(9, 10, 5);
-//		Graph = testGraph;
-//		Graph.addNode(twelve);
-		
-    }
+    private void initializeGraph() {}
 }

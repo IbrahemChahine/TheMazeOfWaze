@@ -70,7 +70,6 @@ public class Graph_Algo implements graph_algorithms, Serializable{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
-
 	}
 	@Override
 	public void init(String file_name) {
