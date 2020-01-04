@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.jupiter.params.shadow.com.univocity.parsers.annotations.Copy;
 
 import dataStructure.DGraph;
 import dataStructure.Edge;
@@ -215,23 +214,47 @@ public class Graph_Algo implements graph_algorithms, Serializable{
 
 		return Answer;
 	}
-	//TODO Documentation
+	
+	class shortestPathNode{//used in TSP only
+		public double distance;
+		public List<node_data> path;
+		
+		public shortestPathNode(List<node_data> newPath) {
+			newPath.remove(0);
+			this.path = newPath;
+			this.distance = ((Node) newPath.get(newPath.size()-1)).getWeight();
+		}
+	}
+	
+	
+	/*
+	 * This method returns a relatively short path going through all the nodes specified in the provided list.
+	 * @param targets the list of targets we must go through
+	 * @param Distances a double HashMap, utilizing a special container, to contain the shortestPaths of each of the targets to each other, and the path's weight
+	 * return a simple path going over all nodes in the list
+	 */
 	@Override
 	public List<node_data> TSP(List<Integer> targets) {
+		
+		//for each node in the list, calculate the shortestPath from it to the other targets. Send that to the constructor of the special nodes (shortestPathNode)
+		//and set it at the relevant place in the double HashMap.
+		//after finding the best node to start from (it will have the shortest overall weight for the path), for each of the nodes in that route,
+		//add the path found earlier by shortestPath to the final answer.
+		//(they already don't include the node you start the path from, so it's safe to add each of them freely. no node will be added twice. The first node of the path is added manually first)
+		
 		if(!this.isConnected()) {//as Instructed by Boaz - if the Graph isn't connected, return null.
 			System.err.println("Graph isn't connected. Returning NULL for TSP");
 			return null;
 		}
 		
 		double minimum = Double.POSITIVE_INFINITY;
-		ArrayList<Integer> minimumNodeKeyList = new ArrayList<Integer>();
-		HashMap<Integer, HashMap<Integer,Double>> Distances = new HashMap<Integer, HashMap<Integer,Double>>();
+		ArrayList<Integer> targetsOrderList = new ArrayList<Integer>();
+		HashMap<Integer, HashMap<Integer,shortestPathNode>> Distances = new HashMap<Integer, HashMap<Integer,shortestPathNode>>();
 		for (int i : targets) {
-			Distances.put(i, new HashMap<Integer,Double>()); //create a new inner HashMap for each of the targets
+			Distances.put(i, new HashMap<Integer,shortestPathNode>()); //create a new inner HashMap for each of the targets
 			for (int j : targets) {
 				if(i==j) {continue;}
-				double currentDistance = shortestPathDist(i,j);
-				Distances.get(i).put(j, currentDistance);
+				Distances.get(i).put(j, new shortestPathNode(shortestPath(i,j)));
 			}
 		}//end calculate all ShortestPath of all targets to each other
 		
@@ -251,7 +274,7 @@ public class Graph_Algo implements graph_algorithms, Serializable{
 				int nextNodeKey = -1;
 				int nextNodeIndex = -1;
 				for (int j = 0; j < CURRENT_targets.size(); j++) {
-					double currentCandidate = Distances.get(currentPrev).get(CURRENT_targets.get(j));
+					double currentCandidate = Distances.get(currentPrev).get(CURRENT_targets.get(j)).distance;
 					if (currentCandidate<=currentMinimum) {
 						currentMinimum = currentCandidate;
 						nextNodeKey = CURRENT_targets.get(j);
@@ -259,7 +282,7 @@ public class Graph_Algo implements graph_algorithms, Serializable{
 					}
 				}
 				if(CURRENT_targets.size() == 1) {
-					currentMinimum = Distances.get(currentPrev).get(CURRENT_targets.get(0));
+					currentMinimum = Distances.get(currentPrev).get(CURRENT_targets.get(0)).distance;
 					nextNodeKey = CURRENT_targets.get(0);
 					nextNodeIndex = 0;
 				}
@@ -271,16 +294,20 @@ public class Graph_Algo implements graph_algorithms, Serializable{
 			
 			if (currentPathDistance<minimum) { //if the current path is the shortest - update the minimum path distance and it's the list showing it's path
 				minimum = currentPathDistance;
-				minimumNodeKeyList.clear();
+				targetsOrderList.clear();
 				for (int p: CURRENT_Path) {
-					minimumNodeKeyList.add(p);
+					targetsOrderList.add(p);
 				}
 			}//end if (currentPathDistance<minimum) 
 		}//end who is the first node in the path
 		
 		List <node_data> answer = new ArrayList<node_data>();
-		for (int currentNodeKey : minimumNodeKeyList) {
-			answer.add(this.Graph.getNode(currentNodeKey));
+		answer.add(this.Graph.getNode(targetsOrderList.get(0))); //add the first node in the orederList manually, as the shortestPath saved values don't include the first node in the path (to prevent adding a node twice)
+		for (int i = 0; i < targetsOrderList.size()-1; i++) { //get every needed shortest path, for the found targets order list, and add each to the final answer. 
+			int currentKey = targetsOrderList.get(i);
+			int nextKey = targetsOrderList.get(i+1);
+			List <node_data> currentPath = Distances.get(currentKey).get(nextKey).path;
+			answer.addAll(currentPath);
 		}
 		
 		System.out.println(minimum);
