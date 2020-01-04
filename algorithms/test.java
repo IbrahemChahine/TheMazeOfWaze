@@ -70,7 +70,6 @@ public class test {
 		testGraph.connect(7, 10, 2);
 		
 		testGraph.connect(9, 10, 5);
-		
 		Graph_Algo graphAlgoTest = new Graph_Algo();
 		graphAlgoTest.init(testGraph);
 		System.out.println(graphAlgoTest.isConnected());

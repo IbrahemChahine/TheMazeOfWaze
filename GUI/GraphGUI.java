@@ -153,7 +153,6 @@ public class GraphGUI{
 		travpanel.setLayout(new FlowLayout());
 		JPanel newpanel = new JPanel();
 		newpanel.setLayout(new FlowLayout());
-		Window window = new Window(frame);
 		frame.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
@@ -227,6 +226,7 @@ public class GraphGUI{
 					if(!a.isConnected()) {
 						connect.setText("The Graph is not Connected");
 					}
+					TspInstructions.setVisible(false);
 					connect.setVisible(true);
 					System.out.println(a.isConnected());
 				} catch (Exception e2) {}
@@ -250,6 +250,7 @@ public class GraphGUI{
 					PathBool = true;
 			    	connect.setVisible(false);
 				    instructions.setVisible(false);
+				    TspInstructions.setVisible(false);
 				    PathInstructions.setVisible(true);
 				} catch (Exception e2) {
 					
@@ -493,7 +494,7 @@ public class GraphGUI{
 	    // Handle user clicking two nodes for the tail and head of a new edge to be added
 	    if ((addEBClicked) && (chosenNode != null) && (firstN == null)) {
 			firstN = chosenNode;
-			instructions.setText("set the weight in the Set weight and press enter then Select the tail node.");
+			instructions.setText("set the weight in the Set weight and press enter then Select source node and destination node.");
 	    } else if ((addEBClicked) && (chosenNode != null) && (firstN != null) && (secondN == null)) {
 			secondN = chosenNode;
 			int edata = Graph.getEdges().size() + 1;
@@ -582,6 +583,7 @@ public class GraphGUI{
 			    	TspBool = false;
 					graphComponent.repaint();
 					TspInstructions.setVisible(false);
+					nodesSelected.clear();
 				} catch (Exception e2) {System.out.println(e2);}
 	    	}
 	    	else {

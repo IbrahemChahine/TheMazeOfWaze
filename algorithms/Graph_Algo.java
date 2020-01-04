@@ -10,16 +10,26 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
+
+import org.junit.jupiter.params.shadow.com.univocity.parsers.annotations.Copy;
+
 import dataStructure.DGraph;
 import dataStructure.Edge;
 import dataStructure.graph;
 import dataStructure.node_data;
 import dataStructure.Node;
 
-/**
- * This empty class represents the set of graph-theory algorithms
- * which should be implemented as part of Ex2 - Do edit this class.
- * @author 
+/** 		// TODO complete the following comments.
+ * This class represents a set of graph-theory algorithms.
+ * In this class you will be able to run the following algorithms:
+ * 		1. isConnected - Check if the graph is connected. 
+ * 		   time complexity = O(|V|+|E|) such that V is the nodes of the graph and E is the edges.
+ * 		2. ShortestPath - Returns the Shortest Path between two given nodes in the graph.
+ * 		   time complexity = 
+ * 		3. TSP - Given a list of node targets the method will Return a simple short path between the targets. 
+ * 		   time complexity = 
+ * @author Ibrahem Chahine, Ofir Peller.
  *
  */
 public class Graph_Algo implements graph_algorithms, Serializable{
@@ -31,7 +41,9 @@ public class Graph_Algo implements graph_algorithms, Serializable{
 	 * 
 	 */
 	public DGraph Graph;
-
+	/*
+	 * Inits from graph. 
+	 */
 	@Override
 	public void init(graph g) {
 		this.Graph = (DGraph) g;
@@ -39,7 +51,11 @@ public class Graph_Algo implements graph_algorithms, Serializable{
 	public void init(Graph_Algo g) {
 		this.Graph = (DGraph) g.copy();
 	}
-
+	/** 
+	 * This method Computes a deep copy of this graph.
+	 * @param copy The deep copy of this graph
+	 * @return Deep copy of this graph
+	 */
 	@Override
 	public graph copy() {
 		DGraph copy = new DGraph();
@@ -53,6 +69,12 @@ public class Graph_Algo implements graph_algorithms, Serializable{
 		}
 		return copy;
 	}
+	/*
+	 * This method saves the project to file.
+	 * @param file_name The given filename of the project.
+	 * @param file the File.
+	 * @param tempToFile A Graph_Algo object.
+	 */
 	@Override
 	public void save(String file_name) {
 		try {
@@ -67,10 +89,14 @@ public class Graph_Algo implements graph_algorithms, Serializable{
 			file.close();
 			System.out.println("Object has been serialized"); 
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
 	}
+	/*
+	 * This method inits the project from graph.
+	 * @param file_name The filename of the project.
+	 * @param file the File of the project.
+	 */
 	@Override
 	public void init(String file_name) {
 		try
@@ -95,10 +121,22 @@ public class Graph_Algo implements graph_algorithms, Serializable{
 			System.out.println("ClassNotFoundException is caught"); 
 		} 
 	}
+	/**
+	 * Returns true if and only if (iff) there is a valid path from EVREY node to each
+	 * other node. NOTE: assume directional graph - a valid path (a-->b) does NOT imply a valid path (b-->a).
+	 * Go to the check(Graph) method to get further Explanation on how this task is done. 
+	 * @return true if and only if (iff) there is a valid path from EVREY node to each other node
+	 */
 	@Override
 	public boolean isConnected() {
 		return check(Graph);
 	}
+	/*
+	 * This method returns the Weight of the shortest path from src to dest.
+	 * @param tmp the shortest path from src to dest.
+	 * @param lastNodeInPath the destination node.
+	 * return the Weight of the shortest path from src to dest.
+	 */
 	@Override
 	public double shortestPathDist(int src, int dest) {
 		try {
@@ -112,7 +150,7 @@ public class Graph_Algo implements graph_algorithms, Serializable{
 
 	}
 
-
+	//TODO Documentation
 	@Override
 	public List<node_data> shortestPath(int src, int dest) {
 		//		first check if the two nodes are connected
@@ -177,56 +215,7 @@ public class Graph_Algo implements graph_algorithms, Serializable{
 
 		return Answer;
 	}
-
-//	@Override
-//	public List<node_data> TSP(List<Integer> targets) {
-//		double minimum = Double.POSITIVE_INFINITY;
-//		ArrayList<Integer> minimumNodeKeyList = new ArrayList<Integer>();
-//		HashMap<Integer, HashMap<Integer,Double>> Distances = new HashMap<Integer, HashMap<Integer,Double>>();
-//		for (int i : targets) {
-//			Distances.put(i, new HashMap<Integer,Double>()); //create a new inner HashMap for each of the targets
-//			for (int j : targets) {
-//				if(i==j) {continue;}
-//				double currentDistance = shortestPathDist(i,j);
-//				Distances.get(i).put(j, currentDistance);
-//			}
-//		}//end calculate all ShortestPath of all targets to each other
-//
-//		for (int i : targets) {
-//			int[] allTargetssBesideBeginningNode = new int[targets.size()-1];
-//			int k = 0;
-//			for (int j: targets) {
-//				if(i!=j) {//if this node isn't the beginning node
-//					allTargetssBesideBeginningNode[k]=j;
-//					k++;
-//				}
-//			}
-//			ArrayList<ArrayList<Integer>> currentPermutations = new ArrayList<ArrayList<Integer>>();
-//			currentPermutations = permuteFatherMethod(allTargetssBesideBeginningNode);
-//			for (ArrayList<Integer> specificPermutation : currentPermutations) {
-//				double currentMinimum = Distances.get(i).get(specificPermutation.get(0)); //add the 1st journey cost
-//				for (int j = 1; j < specificPermutation.size(); j++) {
-//					double addToCurrentMinimum = Distances.get(specificPermutation.get(j-1)).get(specificPermutation.get(j)); //add the next journey
-//					currentMinimum = currentMinimum + addToCurrentMinimum; //add the next journey cost to the total cost
-//				}
-//				if (currentMinimum<minimum) { //test if the now found trip is the cheapest, up till now.
-//					minimum = currentMinimum;
-//					specificPermutation.add(0, i); //add the key of the Node we begin at, to the list.
-//					minimumNodeKeyList = specificPermutation;
-//				}
-//			}//end iterate over permutations of current beginning node
-//		}//end iterate, changing beginning node.
-//		
-//		
-//		List <node_data> answer = new ArrayList<node_data>();
-//		for (int i = 0; i < minimumNodeKeyList.size(); i++) {
-//			answer.add(this.Graph.getNode(minimumNodeKeyList.get(i)));
-//		}
-//		System.out.println(minimum);
-//		System.out.println(answer.toString());
-//		return answer;
-//	}//end TSP
-	
+	//TODO Documentation
 	@Override
 	public List<node_data> TSP(List<Integer> targets) {
 		if(!this.isConnected()) {//as Instructed by Boaz - if the Graph isn't connected, return null.
@@ -299,13 +288,13 @@ public class Graph_Algo implements graph_algorithms, Serializable{
 		return answer;
 		
 	}//end TSP
-
+	//TODO Documentation 
 	public ArrayList<ArrayList<Integer>> permuteFatherMethod(int[] arr) {
 		ArrayList<ArrayList<Integer>> list = new ArrayList<>();
 		permuteHelper(list, new ArrayList<>(), arr);
 		return list;
 	}
-
+	//TODO Documentation
 	private void permuteHelper(ArrayList<ArrayList<Integer>> list, ArrayList<Integer> resultList, int [] arr){
 		// Base case
 		if(resultList.size() == arr.length){
@@ -328,8 +317,7 @@ public class Graph_Algo implements graph_algorithms, Serializable{
 			}
 		}
 	}
-
-	public void DFS(DGraph g, int v, HashMap<Integer,Boolean> visited) {
+	public static void DFS(DGraph g, int v, HashMap<Integer,Boolean> visited) {
 		if(visited.containsKey(v)) {
 			visited.replace(v, true);
 		}
@@ -343,81 +331,135 @@ public class Graph_Algo implements graph_algorithms, Serializable{
 			}
 		}
 	}
-	public boolean check(DGraph graph) {
-		for(int v : graph.getNodes().keySet()) {
-			HashMap<Integer,Boolean> visited = new HashMap<Integer,Boolean>();
-			for (int i : graph.getNodes().keySet()) {
-				visited.put(i, false);
-			}
-			DFS(graph, v, visited);
-			for (int b: visited.keySet())
-				if (!visited.get(b))
-					return false;
+	/*
+	 * This method checks if a given graph is connected or not.
+	 * Explanation :
+			 * The idea is, if every node can be reached from a vertex v, and every node can reach v, 
+			 * then the graph is strongly connected.
+			 * then, we check if all vertices are reachable from v. 
+			 * then, we check if all vertices can reach v (In reversed graph, if all vertices are reachable from v, 
+			 * then all vertices can reach v in original graph).
+	 * @param graph The given graph.
+	 * @param visited A Hashmap such that the keys belong to nodes in the graph and the values are boolean values stating if 
+	 * 		  the node that belongs to the key are been visited.
+	 * @param NodeList A list of nodes in the graph
+	 * @return true if the graph is connected, else false.
+	 */
+	public boolean check(DGraph graph)
+	{
+		// stores vertex is visited or not
+		HashMap<Integer,Boolean> visited = new HashMap<Integer,Boolean>();
+		for (int i : graph.getNodes().keySet()) {
+			visited.put(i, false);
+		}// choose random starting point
+		Set<Integer> NodeList = graph.getNodes().keySet();
+		Object[] arr = NodeList.toArray();
+		int v = (int) arr[0];
+		// run a DFS starting at v
+		DFS(graph, v, visited);
+		// If DFS traversal doesn’t visit all vertices,
+		// then graph is not strongly connected
+		for (int b: visited.keySet())
+			if (!visited.get(b))
+				return false;
+		for (int i : graph.getNodes().keySet()) {
+			visited.put(i, false);
 		}
+		DGraph gr = (DGraph) copy();
+		for(int u : this.Graph.Edges.keySet()) {
+			for(int k : this.Graph.Edges.get(u).keySet()) {
+				if(!(this.Graph.Edges.containsKey(k) && this.Graph.Edges.get(k).containsKey(u))) {
+					gr.connect(k,u,0);
+					gr.removeEdge(u,k);
+				}
+			}
+		}
+		// Again run a DFS starting at v
+		DFS(gr, v, visited);
+		// If DFS traversal doesn’t visit all vertices,
+		// then graph is not strongly connected
+		for (int b: visited.keySet())
+			if (!visited.get(b))
+				return false;
+		// if graph "passes" both DFSs, it is strongly connected
 		return true;
 	}
-	//	public static boolean check(DGraph graph)
-	//	{
-	//		// stores vertex is visited or not
-	//		HashMap<Integer,Boolean> visited = new HashMap<Integer,Boolean>();
-	//		for (int i : graph.getNodes().keySet()) {
-	//			visited.put(i, false);
-	//		}// choose random starting point
-	//		Set<Integer> NodeList = graph.getNodes().keySet();
-	//		Object[] arr = NodeList.toArray();
-	//		int v = (int) arr[0];
-	//		
-	//		// run a DFS starting at v
-	//		DFS(graph, v, visited);
-	//
-	//		// If DFS traversal doesn’t visit all vertices,
-	//		// then graph is not strongly connected
-	//		Set<Integer> KeySet;
-	//		KeySet = visited.keySet();
-	//		for (int b: KeySet)
-	//			if (!visited.get(b))
-	//				return false;
-	//	
-	//		for (int i : graph.getNodes().keySet()) {
-	//			visited.put(i, false);
-	//		}
-	//		HashMap<Integer, HashMap<Integer, Edge_Data>> edges = new HashMap<Integer, HashMap<Integer, Edge_Data>>();
-	//		for(int u : NodeList) {
-	//			Set<Integer> EdgeList = graph.getEdge(u).keySet();
-	//			for (int z : EdgeList) {
-	//				HashMap<Integer, Edge_Data> value = new HashMap<Integer, Edge_Data>();
-	//				value.put(u,(Edge_Data) graph.getEdge(u, z));
-	//				edges.put(z,value);
-	//			}
-	//		}
-	//		DGraph gr = new DGraph(graph.getNodes(),edges);
-	//		// Again run a DFS starting at v
-	//		DFS(gr, v, visited);
-	//
-	//		// If DFS traversal doesn’t visit all vertices,
-	//		// then graph is not strongly connected
-	//		Set<Integer> KeySet2;
-	//		KeySet2 = visited.keySet();
-	//		for (int b: KeySet2)
-	//			if (!visited.get(b))
-	//				return false;
-	//
-	//		// if graph "passes" both DFSs, it is strongly connected
-	//		return true;
-	//	}
-	//	private static Object deepCopy(Object object) {
-	//	   try {
-	//	     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-	//	     ObjectOutputStream outputStrm = new ObjectOutputStream(outputStream);
-	//	     outputStrm.writeObject(object);
-	//	     ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
-	//	     ObjectInputStream objInputStream = new ObjectInputStream(inputStream);
-	//	     return objInputStream.readObject();
-	//	   }
-	//	   catch (Exception e) {
-	//	     e.printStackTrace();
-	//	     return null;
-	//	   }
-	// }
+//	public boolean check(DGraph graph) {
+//		for(int v : graph.getNodes().keySet()) {
+//			HashMap<Integer,Boolean> visited = new HashMap<Integer,Boolean>();
+//			for (int i : graph.getNodes().keySet()) {
+//				visited.put(i, false);
+//			}
+//			DFS(graph, v, visited);
+//			for (int b: visited.keySet())
+//				if (!visited.get(b))
+//					return false;
+//		}
+//		return true;
+//	}
+//		private static Object deepCopy(Object object) {
+//		   try {
+//		     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+//		     ObjectOutputStream outputStrm = new ObjectOutputStream(outputStream);
+//		     outputStrm.writeObject(object);
+//		     ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
+//		     ObjectInputStream objInputStream = new ObjectInputStream(inputStream);
+//		     return objInputStream.readObject();
+//		   }
+//		   catch (Exception e) {
+//		     e.printStackTrace();
+//		     return null;
+//		   }
+//	 }
 
+
+//	@Override
+//	public List<node_data> TSP(List<Integer> targets) {
+//		double minimum = Double.POSITIVE_INFINITY;
+//		ArrayList<Integer> minimumNodeKeyList = new ArrayList<Integer>();
+//		HashMap<Integer, HashMap<Integer,Double>> Distances = new HashMap<Integer, HashMap<Integer,Double>>();
+//		for (int i : targets) {
+//			Distances.put(i, new HashMap<Integer,Double>()); //create a new inner HashMap for each of the targets
+//			for (int j : targets) {
+//				if(i==j) {continue;}
+//				double currentDistance = shortestPathDist(i,j);
+//				Distances.get(i).put(j, currentDistance);
+//			}
+//		}//end calculate all ShortestPath of all targets to each other
+//
+//		for (int i : targets) {
+//			int[] allTargetssBesideBeginningNode = new int[targets.size()-1];
+//			int k = 0;
+//			for (int j: targets) {
+//				if(i!=j) {//if this node isn't the beginning node
+//					allTargetssBesideBeginningNode[k]=j;
+//					k++;
+//				}
+//			}
+//			ArrayList<ArrayList<Integer>> currentPermutations = new ArrayList<ArrayList<Integer>>();
+//			currentPermutations = permuteFatherMethod(allTargetssBesideBeginningNode);
+//			for (ArrayList<Integer> specificPermutation : currentPermutations) {
+//				double currentMinimum = Distances.get(i).get(specificPermutation.get(0)); //add the 1st journey cost
+//				for (int j = 1; j < specificPermutation.size(); j++) {
+//					double addToCurrentMinimum = Distances.get(specificPermutation.get(j-1)).get(specificPermutation.get(j)); //add the next journey
+//					currentMinimum = currentMinimum + addToCurrentMinimum; //add the next journey cost to the total cost
+//				}
+//				if (currentMinimum<minimum) { //test if the now found trip is the cheapest, up till now.
+//					minimum = currentMinimum;
+//					specificPermutation.add(0, i); //add the key of the Node we begin at, to the list.
+//					minimumNodeKeyList = specificPermutation;
+//				}
+//			}//end iterate over permutations of current beginning node
+//		}//end iterate, changing beginning node.
+//		
+//		
+//		List <node_data> answer = new ArrayList<node_data>();
+//		for (int i = 0; i < minimumNodeKeyList.size(); i++) {
+//			answer.add(this.Graph.getNode(minimumNodeKeyList.get(i)));
+//		}
+//		System.out.println(minimum);
+//		System.out.println(answer.toString());
+//		return answer;
+//	}//end TSP
+	
 }
