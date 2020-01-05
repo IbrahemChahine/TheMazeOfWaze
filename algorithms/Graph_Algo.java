@@ -151,6 +151,15 @@ public class Graph_Algo implements graph_algorithms, Serializable{
 	 */
 	@Override
 	public double shortestPathDist(int src, int dest) {
+		
+		try {
+			this.Graph.getNode(src);
+			this.Graph.getNode(dest);
+		}
+		catch(Exception e) {
+			throw new RuntimeException("Either the given src or dst keys do not belong to a node within the graph!");
+		}
+		
 		try {
 			List<node_data> temp = shortestPath(src, dest);
 			Node lastNodeInPath = (Node) temp.get(temp.size()-1);
@@ -170,6 +179,16 @@ public class Graph_Algo implements graph_algorithms, Serializable{
 	 */
 	@Override
 	public List<node_data> shortestPath(int src, int dest) {
+		try {
+			this.Graph.getNode(src);
+			this.Graph.getNode(dest);
+		}
+		catch(Exception e) {
+			throw new RuntimeException("Either the given src or dst keys do not belong to a node within the graph!");
+		}
+		
+		
+		
 		//		first check if the two nodes are connected
 		HashMap<Integer,Boolean> visited1 = new HashMap<Integer,Boolean>();
 		for(int u : this.Graph.getNodes().keySet()) {
