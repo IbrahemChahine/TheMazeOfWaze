@@ -236,6 +236,14 @@ public class Graph_Algo implements graph_algorithms, Serializable{
 			newPath.remove(0);
 			this.path = newPath;
 			this.distance = ((Node) newPath.get(newPath.size()-1)).getWeight();
+			System.out.println(this.distance);
+		}
+		
+		public shortestPathNode(node_data nodeToAdd) {
+			//constructor for path from node to itself. Empty list and distance=0.
+			this.path = new ArrayList<node_data>();
+			this.distance = 0;
+			
 		}
 	}
 	
@@ -275,8 +283,9 @@ public class Graph_Algo implements graph_algorithms, Serializable{
 		for (int i : targets) {
 			Distances.put(i, new HashMap<Integer,shortestPathNode>()); //create a new inner HashMap for each of the targets
 			for (int j : targets) {
-				if(i==j) {continue;}
-				Distances.get(i).put(j, new shortestPathNode(shortestPath(i,j)));
+				
+				if(i==j) {Distances.get(i).put(j, new shortestPathNode(this.Graph.getNode(j)));}
+				else{Distances.get(i).put(j, new shortestPathNode(shortestPath(i,j)));}
 			}
 		}//end calculate all ShortestPath of all targets to each other
 		
@@ -326,8 +335,10 @@ public class Graph_Algo implements graph_algorithms, Serializable{
 		List <node_data> answer = new ArrayList<node_data>();
 		answer.add(this.Graph.getNode(targetsOrderList.get(0))); //add the first node in the orederList manually, as the shortestPath saved values don't include the first node in the path (to prevent adding a node twice)
 		for (int i = 0; i < targetsOrderList.size()-1; i++) { //get every needed shortest path, for the found targets order list, and add each to the final answer. 
+			
 			int currentKey = targetsOrderList.get(i);
 			int nextKey = targetsOrderList.get(i+1);
+			
 			List <node_data> currentPath = Distances.get(currentKey).get(nextKey).path;
 			answer.addAll(currentPath);
 		}
