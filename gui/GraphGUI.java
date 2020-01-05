@@ -75,6 +75,8 @@ public class GraphGUI{
     JLabel PathInstructions;
     /** Label that appears when user clicks on TSP.*/
     JLabel TspInstructions;
+	JLabel connect = new JLabel();
+
     boolean PathBool;
     boolean TspBool = false;
     boolean LoadBool = false;
@@ -83,6 +85,7 @@ public class GraphGUI{
 
     /** One of a new edge's nodes. */
     public Node firstN;
+    
     
 
     /** The second of a new edge's nodes.*/
@@ -168,6 +171,8 @@ public class GraphGUI{
 		LoadFromFile.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
 				try {
+					connect.setVisible(false);
+					instructions.setVisible(false);
 					JFileChooser LoadFromFile2 = new JFileChooser();
 					LoadFromFile2.setDialogTitle("Choose a file to load");
 					LoadFromFile2.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
@@ -203,6 +208,8 @@ public class GraphGUI{
 		JButton SaveToImage = new JButton("Save Image");
 		SaveToImage.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
+				connect.setVisible(false);
+				instructions.setVisible(false);
 				graphComponent.saveImage("image"+ImageCount,"png");
 				ImageCount++;
 			}
@@ -212,12 +219,13 @@ public class GraphGUI{
 		 * isconnected.
 		 */
 		
-		JLabel connect = new JLabel();
+		
 		newpanel.add(connect);
 		JButton IsConnected = new JButton("IsConnected");
 		IsConnected.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
 				PaintWhite();
+				instructions.setVisible(false);
 				try {
 					Graph_Algo a = new Graph_Algo();
 					a.init(Graph);
@@ -227,6 +235,7 @@ public class GraphGUI{
 					if(!a.isConnected()) {
 						connect.setText("The Graph is not Connected");
 					}
+				    PathInstructions.setVisible(false);
 					TspInstructions.setVisible(false);
 					connect.setVisible(true);
 					System.out.println(a.isConnected());
@@ -240,7 +249,7 @@ public class GraphGUI{
 		/*
 		 *ShortestPath
 		 */
-		PathInstructions = new JLabel("Select the src node");
+		PathInstructions = new JLabel("Select the src node and dest node");
 		newpanel.add(PathInstructions);
 		PathInstructions.setVisible(false);
 		JButton ShortestPath = new JButton("ShortestPath");
@@ -263,18 +272,72 @@ public class GraphGUI{
 		 * TSP 
 		 */
 		JButton TSP = new JButton("TSP");
-		TspInstructions = new JLabel("Select the nodes for the targets and then click on TSP and select a random node from the targets.");
+		TspInstructions = new JLabel("TSP Mode");
 		newpanel.add(TspInstructions);
 		TspInstructions .setVisible(false);
 		TSP.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
 				try {
-					PaintWhite();
-					TspBool = true;
 					connect.setVisible(false);
 				    instructions.setVisible(false);
 					TspInstructions.setVisible(true);
-					TSP();
+					PaintWhite();
+					String Num = (String)JOptionPane.showInputDialog(
+                            frame,
+                            "Enter the number of keys that you want in the targets.",
+                            null, JOptionPane.PLAIN_MESSAGE,
+                            null, null, null);
+					int TargetNum = Integer.valueOf(Num);
+					if(TargetNum > Graph.nodeSize()) {
+						JOptionPane.showMessageDialog(frame, "Error: the number of targets cannot be bigger than the node size.");
+					}
+					else {
+						ArrayList<Integer> target = new ArrayList<Integer>();
+						for(int i=0 ; i < TargetNum ; i++) {
+							String keystring = (String)JOptionPane.showInputDialog(
+		                            frame,
+		                            "Enter key num"+i,
+		                            null, JOptionPane.PLAIN_MESSAGE,
+		                            null, null, null);
+							int key = Integer.valueOf(keystring);
+							if(!Graph.getNodes().containsKey(key)) {
+								JOptionPane.showMessageDialog(frame, "Error: the given doesn't belong to the graph.");
+								i--;
+							}
+							else {
+								target.add(key);
+//								System.out.println(target.get(i));
+							}
+						}
+						
+		    			Algo.init(Graph);
+				    	if(Algo.isConnected() == true) {
+				    		ArrayList<node_data> targets = (ArrayList<node_data>) Algo.TSP(target);
+				    		for(int i = 0; i< targets.size(); i++) {
+				    			System.out.println(targets.get(i));
+				    		}
+					    	for(int k = 0; k<targets.size(); k++) {
+								if(k<targets.size()-1) {
+									ArrayList<node_data> path = (ArrayList<node_data>)Algo.shortestPath(targets.get(k).getKey(),targets.get(k+1).getKey());
+									for(int i = 0; i<path.size(); i++) {
+										if(i<path.size()-1) {
+											Graph.getEdge(path.get(i).getKey()).get(path.get(i+1).getKey()).setTag(1);
+											if(Graph.getEdges().get(path.get(i+1).getKey()).containsKey(path.get(i).getKey())) {
+												Graph.getEdge(path.get(i+1).getKey()).get(path.get(i).getKey()).setTag(1);	
+											}
+											graphComponent.repaint();
+										}
+									}
+								}
+							}
+					}
+					
+			    	}
+			    	TspBool = false;
+					graphComponent.repaint();
+					TspInstructions.setVisible(false);
+					nodesSelected.clear();	
+					
 				} catch (Exception e2) {System.out.println(e2);}
 			}
 		    });
@@ -286,6 +349,9 @@ public class GraphGUI{
 		addNodeButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
 				TspInstructions.setVisible(false);
+				connect.setVisible(false);
+				 PathInstructions.setVisible(false);
+				    instructions.setVisible(false);
 				try {
 					PaintWhite();
 					double x = Math.random()*250+100;
@@ -293,6 +359,7 @@ public class GraphGUI{
 				    Graph.addNode(new Node(Counter,0,new Point3D(x,y,0),""));
 				    fixCounter(Counter);
 				    graphComponent.repaint();
+				    PathInstructions.setVisible(false);
 				} catch (Exception e2) {}
 			}
 		    });
@@ -304,10 +371,15 @@ public class GraphGUI{
 		addEdgeButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
 				TspInstructions.setVisible(false);
+				connect.setVisible(false);
 				PaintWhite();
 			    try {
+			    	PathInstructions.setVisible(false);
 			    	connect.setVisible(false);
+				    
+			    	TspInstructions.setVisible(false);
 				    instructions.setVisible(true);
+				    
 				    String w = (String)JOptionPane.showInputDialog(
                             frame,
                             "Enter the Weight of the Edge",
@@ -505,7 +577,7 @@ public class GraphGUI{
 	  //shortest path.
 	    if ((PathBool) && (chosenNode != null) && (firstN == null)) {
 			firstN = chosenNode;
-			PathInstructions.setText("Select the dest node.");
+			
 	    } else if ((PathBool) && (chosenNode != null) && (firstN != null) && (secondN == null)) {
 			secondN = chosenNode;
 			Graph_Algo algo = new Graph_Algo();
@@ -529,16 +601,16 @@ public class GraphGUI{
 			PathBool = false;
 			nodesSelected.remove(firstN.getKey());
 			nodesSelected.remove(secondN.getKey());			
-			instructions.setVisible(false);
+			PathInstructions.setVisible(false);
 			firstN = null;
 			secondN = null;
 			graphComponent.repaint();
 	    }
-	  //TSP.
-	    if(TspBool == true && nodesSelected.size() > 1) {
-	    	TSP();
-	    }
-//	   
+//	  //TSP.
+//	    if(TspBool == true && nodesSelected.size() > 1) {
+//	    	TSP();
+//	    }
+////	   
 	    
 	}
 	public void mouseClicked(MouseEvent e) {
@@ -656,43 +728,7 @@ public class GraphGUI{
 		} catch (Exception e2) {}
 	} 
     }
-    public void TSP() {
-    	if(TspBool == true && nodesSelected.size() > 1) {
-	    	try {
-	    		Algo.init(Graph);
-		    	ArrayList<Integer> target = new ArrayList<Integer>(); 
-		    	for(int u : nodesSelected.keySet()) {
-		    		target.add(u);
-		    	}
-		    	if(Algo.isConnected() == true) {
-		    		ArrayList<node_data> targets = (ArrayList<node_data>) Algo.TSP(target);
-		    		for(int i = 0; i< targets.size(); i++) {
-		    			System.out.println(targets.get(i));
-		    		}
-		    			
-			    	for(int k = 0; k<targets.size(); k++) {
-						if(k<targets.size()-1) {
-							ArrayList<node_data> path = (ArrayList<node_data>)Algo.shortestPath(targets.get(k).getKey(),targets.get(k+1).getKey());
-							for(int i = 0; i<path.size(); i++) {
-								if(i<path.size()-1) {
-									Graph.getEdge(path.get(i).getKey()).get(path.get(i+1).getKey()).setTag(1);
-									if(Graph.getEdges().get(path.get(i+1).getKey()).containsKey(path.get(i).getKey())) {
-										Graph.getEdge(path.get(i+1).getKey()).get(path.get(i).getKey()).setTag(1);	
-									}
-									graphComponent.repaint();
-								}
-							}
-						}
-					}
-		    	}
-		    	TspBool = false;
-				graphComponent.repaint();
-				TspInstructions.setVisible(false);
-				nodesSelected.clear();	
-	    		
-			} catch (Exception e2) {System.out.println(e2);}
-	    }
-    }
+   
     public void fixCounter(int count) {
     	for(int u : Graph.getNodes().keySet()) {
 			if(count < u) {
