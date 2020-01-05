@@ -68,7 +68,7 @@ public class GraphGUI{
     /** Button to remove selected edge(s). */
     public JButton removeEdgeButton;
 
-    double EdgeWeight;
+    double EdgeWeight = -1;
     /** Label that appears when user adds new edge. */
     JLabel instructions;
     /** Label that appears when user clicks on shortest path. */
@@ -270,10 +270,11 @@ public class GraphGUI{
 			public void actionPerformed(ActionEvent e) {
 				try {
 					PraintWhite();
+					TspBool = true;
 					connect.setVisible(false);
 				    instructions.setVisible(false);
 					TspInstructions.setVisible(true);
-				    TspBool = true;
+				    
 				} catch (Exception e2) {System.out.println(e2);}
 			}
 		    });
@@ -296,7 +297,7 @@ public class GraphGUI{
 			}
 		    });
 		editnodepanel.add(addNodeButton);
-		instructions = new JLabel("Set the weight in the Set weight and press enter then Select the src node.");
+		instructions = new JLabel("Set the weight then Select the src node and dest node.");
 		newpanel.add(instructions);
 		instructions.setVisible(false);
 		JButton addEdgeButton = new JButton("Add Edge");
@@ -305,41 +306,26 @@ public class GraphGUI{
 				TspInstructions.setVisible(false);
 				PraintWhite();
 			    try {
-			    	addEBClicked = true;
 			    	connect.setVisible(false);
 				    instructions.setVisible(true);
+				    String w = (String)JOptionPane.showInputDialog(
+                            frame,
+                            "Enter the Weight of the Edge",
+                            null, JOptionPane.PLAIN_MESSAGE,
+                            null, null, null);
+				    if(!(w == null)) {
+				    	addEBClicked = true;
+		                EdgeWeight = Double.valueOf(w);
+				    }
+				    else {
+				    	System.out.println("you didn't set a weight");
+				    }
 				} catch (Exception e2) {
 					
 				}
 			}
 		    });
 		editedgepanel.add(addEdgeButton);
-		JLabel editEdgeLabel = new JLabel("Set weight: ");
-		editedgepanel.add(editEdgeLabel);
-		enterEdgeData = new JTextField(2);
-		enterEdgeData.setEnabled(true);
-		enterEdgeData.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e) {
-				PraintWhite();
-			    String newEdgeData = enterEdgeData.getText();
-			    if (newEdgeData.length() != 0) {
-			    	try {
-			    		if(addEBClicked == true) {
-				    		EdgeWeight = Double.valueOf(newEdgeData);
-			    		}
-			    		else {
-			    			EdgeWeight = 0;
-			    		}
-					} catch (Exception e2) {
-						System.out.println(e2);
-					}
-			    }
-			    enterEdgeData.setText("");
-			    enterEdgeData.setEnabled(true);
-			    graphComponent.repaint();
-			}
-		    });
-		editedgepanel.add(enterEdgeData);
 		editpanel.add(isconnected, BorderLayout.EAST);
 		editpanel.add(editnodepanel, BorderLayout.NORTH);
 		editpanel.add(editedgepanel, BorderLayout.SOUTH);
@@ -493,14 +479,16 @@ public class GraphGUI{
 	    // Handle user clicking two nodes for the tail and head of a new edge to be added
 	    if ((addEBClicked) && (chosenNode != null) && (firstN == null)) {
 			firstN = chosenNode;
-			instructions.setText("set the weight in the Set weight and press enter then Select source node and destination node.");
+			instructions.setText("Set the weight then Select the src node and dest node.");
 	    } else if ((addEBClicked) && (chosenNode != null) && (firstN != null) && (secondN == null)) {
 			secondN = chosenNode;
 			int edata = Graph.getEdges().size() + 1;
 			if (firstN != secondN) {
 				try {
-				    Graph.connect(firstN.getKey(), secondN.getKey(),EdgeWeight);
-			
+					if(EdgeWeight != -1) {
+						Graph.connect(firstN.getKey(), secondN.getKey(),EdgeWeight);
+					}
+				    
 				} catch (Exception e2) {
 					System.out.println(e2);
 				}
@@ -550,49 +538,41 @@ public class GraphGUI{
 	    }
 	  //TSP.
 	    if(TspBool == true) {
-	    	if(nodesSelected.size() >1) {
-	    		try {
-		    		Algo.init(Graph);
-			    	ArrayList<Integer> target = new ArrayList<Integer>(); 
-			    	for(int u : nodesSelected.keySet()) {
-			    		target.add(u);
-			    	}
-			    	if(Algo.isConnected() == true) {
-			    		ArrayList<node_data> targets = (ArrayList<node_data>) Algo.TSP(target);
-			    		for(int i = 0; i< targets.size(); i++) {
-			    			System.out.println(targets.get(i));
-			    		}
-			    			
-				    	for(int k = 0; k<targets.size(); k++) {
-							if(k<targets.size()-1) {
-								
-								ArrayList<node_data> path = (ArrayList<node_data>)Algo.shortestPath(targets.get(k).getKey(),targets.get(k+1).getKey());
-								for(int i = 0; i<path.size(); i++) {
-									if(i<path.size()-1) {
-										Graph.getEdge(path.get(i).getKey()).get(path.get(i+1).getKey()).setTag(1);
-										if(Graph.getEdges().get(path.get(i+1).getKey()).containsKey(path.get(i).getKey())) {
-											Graph.getEdge(path.get(i+1).getKey()).get(path.get(i).getKey()).setTag(1);	
-										}
-										graphComponent.repaint();
+	    	try {
+	    		Algo.init(Graph);
+		    	ArrayList<Integer> target = new ArrayList<Integer>(); 
+		    	for(int u : nodesSelected.keySet()) {
+		    		target.add(u);
+		    	}
+		    	if(Algo.isConnected() == true) {
+		    		ArrayList<node_data> targets = (ArrayList<node_data>) Algo.TSP(target);
+		    		for(int i = 0; i< targets.size(); i++) {
+		    			System.out.println(targets.get(i));
+		    		}
+		    			
+			    	for(int k = 0; k<targets.size(); k++) {
+						if(k<targets.size()-1) {
+							
+							ArrayList<node_data> path = (ArrayList<node_data>)Algo.shortestPath(targets.get(k).getKey(),targets.get(k+1).getKey());
+							for(int i = 0; i<path.size(); i++) {
+								if(i<path.size()-1) {
+									Graph.getEdge(path.get(i).getKey()).get(path.get(i+1).getKey()).setTag(1);
+									if(Graph.getEdges().get(path.get(i+1).getKey()).containsKey(path.get(i).getKey())) {
+										Graph.getEdge(path.get(i+1).getKey()).get(path.get(i).getKey()).setTag(1);	
 									}
+									graphComponent.repaint();
 								}
 							}
 						}
-			    	}
-			    	TspBool = false;
-					graphComponent.repaint();
-					TspInstructions.setVisible(false);
-					nodesSelected.clear();
-				} catch (Exception e2) {System.out.println(e2);}
-	    	}
-	    	else {
-	    		TspBool = false;
-	    	}
-	    	
+					}
+		    	}
+		    	TspBool = false;
+				graphComponent.repaint();
+				TspInstructions.setVisible(false);
+				nodesSelected.clear();
+			} catch (Exception e2) {System.out.println(e2);}
 	    }
-	    if(LoadBool == true) {
-			LoadBool = false;
-	    }
+	   
 	    
 	}
 	public void mouseClicked(MouseEvent e) {
