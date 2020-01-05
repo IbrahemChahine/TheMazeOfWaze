@@ -356,8 +356,8 @@ public class GraphGUI{
 					PaintWhite();
 					double x = Math.random()*250+100;
 					double y = Math.random()*250+100;
+					fixCounter(Counter);
 				    Graph.addNode(new Node(Counter,0,new Point3D(x,y,0),""));
-				    fixCounter(Counter);
 				    graphComponent.repaint();
 				    PathInstructions.setVisible(false);
 				} catch (Exception e2) {}
