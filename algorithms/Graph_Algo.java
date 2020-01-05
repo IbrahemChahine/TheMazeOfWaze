@@ -17,6 +17,7 @@ import dataStructure.DGraph;
 import dataStructure.Edge;
 import dataStructure.graph;
 import dataStructure.node_data;
+import utils.Point3D;
 import dataStructure.Node;
 
 /** 		// TODO complete the following comments.
@@ -25,9 +26,9 @@ import dataStructure.Node;
  * 		1. isConnected - Check if the graph is connected. 
  * 		   time complexity = O(|V|+|E|) such that V is the nodes of the graph and E is the edges.
  * 		2. ShortestPath - Returns the Shortest Path between two given nodes in the graph.
- * 		   time complexity = 
+ * 
  * 		3. TSP - Given a list of node targets the method will Return a simple short path between the targets. 
- * 		   time complexity = 
+ * 
  * @author Ibrahem Chahine, Ofir Peller.
  *
  */
@@ -40,6 +41,12 @@ public class Graph_Algo implements graph_algorithms, Serializable{
 	 * 
 	 */
 	public DGraph Graph;
+	public Graph_Algo() {
+		this.Graph = new DGraph();
+	}
+	public Graph_Algo(graph g) {
+		this.Graph =  (DGraph) g;
+	}
 	/*
 	 * Inits from graph. 
 	 */
@@ -59,7 +66,10 @@ public class Graph_Algo implements graph_algorithms, Serializable{
 	public graph copy() {
 		DGraph copy = new DGraph();
 		for (int i : this.Graph.getNodes().keySet()) {
-			copy.addNode(new Node(i,this.Graph.getNodes().get(i).getWeight(),this.Graph.getNodes().get(i).getLocation(),this.Graph.getNodes().get(i).getInfo()));
+			double weight = this.Graph.getNodes().get(i).getWeight();
+			Point3D p = new Point3D(Graph.getNodes().get(i).getLocation().x(),Graph.getNodes().get(i).getLocation().y(),Graph.getNodes().get(i).getLocation().z());
+			String info = this.Graph.getNodes().get(i).getInfo();
+			copy.addNode(new Node(i,weight,p,info));
 		}
 		for( int u : this.Graph.getNodes().keySet()) {
 			for (int v : this.Graph.getEdge(u).keySet()) {
@@ -128,6 +138,9 @@ public class Graph_Algo implements graph_algorithms, Serializable{
 	 */
 	@Override
 	public boolean isConnected() {
+		if(this.Graph.getNodes().isEmpty()) {
+			return true;
+		}
 		return check(Graph);
 	}
 	/*

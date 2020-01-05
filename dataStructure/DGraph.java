@@ -1,11 +1,16 @@
 package dataStructure;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
-
+/*
+ * This class represents a Graph, A graph is a group of nodes and group of edges connecting the nodes.
+ * If you want to learn more about graphs we recommend to visit https://en.wikipedia.org/wiki/Graph_(discrete_mathematics).
+ */
 public class DGraph implements graph, Serializable{
 	/**
 	 * 
@@ -137,17 +142,28 @@ public class DGraph implements graph, Serializable{
 	 */
 	@Override
 	public Collection<node_data> getV() {
-		HashMap<Integer, Node> shallowCopy = (HashMap<Integer, Node>) this.Nodes;
-		return (Collection<node_data>) shallowCopy;
+		Collection<node_data> shallowcopy = new ArrayList<node_data>();
+		for(int u : this.Nodes.keySet()) {
+			shallowcopy.add(this.Nodes.get(u));
+		}
+		return shallowcopy;
 	}
 	/*
 	 * This method returns a shallow copy of the collection of edges that belong to a node in the graph.
+	 * Important:
+	 * 			-If the Given key doesn't belong to any node in the graph a RuntimeException will be thrown.
 	 * @param shallowcopy the copy.
 	 * @return a shallow copy of the edges the belong to node_id.
 	 */
 	@Override
 	public Collection<edge_data> getE(int node_id) {
-		HashMap<Integer, Edge> shallowCopy = (HashMap<Integer ,Edge>) this.Edges.get(node_id);
+		if(!this.Nodes.containsKey(node_id)) {
+			throw new RuntimeException("The given key doesn't belong to any node in the Graph.");
+		}
+		Collection<edge_data> shallowCopy = new ArrayList<edge_data>();
+		for(int u : this.Edges.get(node_id).keySet()) {
+			shallowCopy.add(this.Edges.get(node_id).get(u));
+		}
 		return (Collection<edge_data>) shallowCopy;
 	}
 	public HashMap<Integer, Node> getNodes() {

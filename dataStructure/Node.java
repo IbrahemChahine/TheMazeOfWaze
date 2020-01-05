@@ -36,6 +36,14 @@ public class Node implements node_data, Serializable{
 		this.Location = location;
 		this.Info = info;
 	}
+	/*
+	 * constructor 
+	 */
+	public Node(int key, Point3D location) {
+		this.key = key;
+		this.weight = 0;
+		this.Location = location;
+	}
 	public ArrayList<Node> getNeighbors(){
 		return this.Neighbors;
 	}

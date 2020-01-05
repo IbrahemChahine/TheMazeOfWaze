@@ -1,10 +1,10 @@
-package GUI;
+package gui;
 
 import algorithms.*;
 import dataStructure.*;
 import utils.*;
 
-public class Graph{
+public class GraphExample{
 	public static void main(String[] args) {
 		Node first = new Node(0, 0, new Point3D(Math.random()*500,Math.random()*450,0), "first");
 		Node second = new Node(1, 0, new Point3D(Math.random()*500,Math.random()*450,0), "second");

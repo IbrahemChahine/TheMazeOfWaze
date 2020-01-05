@@ -87,6 +87,32 @@ class GraphAlgoTest {
 		}
 		assertTrue(PathBool);
 	}
+	@Test
+	public void deepcopyTest() {
+		DGraph Graph = new DGraph();
+		Node n1 = new Node(10,new Point3D(0,0,0),"");
+		Node n2 = new Node(11,new Point3D(0,0,0),"");
+		Node n3 = new Node(12,new Point3D(0,0,0),"");
+		Graph.addNode(n1);
+		Graph.addNode(n2);
+		Graph.addNode(n3);
+		Graph_Algo Algo = new Graph_Algo();
+		Algo.init(Graph);
+		DGraph copy = (DGraph) Algo.copy();
+		copy.connect(n1.getKey(), n2.getKey(), 10);
+		if(Graph.Edges.get(n1.getKey()).containsKey(n2.getKey())) {
+			fail("This Edge shouldn't in the Original Graph");
+		}
+		Node n4 = new Node(13,new Point3D(0,0,0),"");
+		copy.addNode(n4);
+		if(Graph.Nodes.containsKey(n4.getKey())) {
+			fail("This Node shouldn't in the Original Graph");
+		}
+		n3.setWeight(100);
+		if(copy.Nodes.get(n3.getKey()).getWeight() == 100) {
+			fail("The weight of a node if the deepcopy shouldn't change if it was changed in the Original Graph");
+		}
+	}
 //	@Test // TODO Fix the TSP.
 //	public void TSPTest() {
 //		DGraph Graph = new DGraph();

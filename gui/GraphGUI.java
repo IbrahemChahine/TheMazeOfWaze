@@ -1,5 +1,5 @@
- package GUI;
-import static GUI.GraphComponent.NODE_RADIUS;
+ package gui;
+import static gui.GraphComponent.NODE_RADIUS;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -68,11 +68,12 @@ public class GraphGUI{
     /** Button to remove selected edge(s). */
     public JButton removeEdgeButton;
 
-    double EdgeWeight = 0;
+    double EdgeWeight;
     /** Label that appears when user adds new edge. */
     JLabel instructions;
-
+    /** Label that appears when user clicks on shortest path. */
     JLabel PathInstructions;
+    /** Label that appears when user clicks on TSP.*/
     JLabel TspInstructions;
     boolean PathBool;
     boolean TspBool = false;
@@ -82,6 +83,7 @@ public class GraphGUI{
 
     /** One of a new edge's nodes. */
     public Node firstN;
+    
 
     /** The second of a new edge's nodes.*/
     public Node secondN;
@@ -158,11 +160,10 @@ public class GraphGUI{
 			public void windowClosing(WindowEvent e) {
 				windowsOn = false;
 			}
-//			@Override
-//			public void windowClosed(WindowEvent e) {
-//			    System.out.println("B has closed");
-//			}
 		});
+		/*
+		 * load.
+		 */
 		JButton LoadFromFile = new JButton("Load");
 		LoadFromFile.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
@@ -262,7 +263,7 @@ public class GraphGUI{
 		 * TSP 
 		 */
 		JButton TSP = new JButton("TSP");
-		TspInstructions = new JLabel("Select the nodes such that the last node you pick will be the starting node then click on tsp again and pick one of the nodes again. ");
+		TspInstructions = new JLabel("Select the nodes for the targets and then click on TSP and select a random node from the targets.");
 		newpanel.add(TspInstructions);
 		TspInstructions .setVisible(false);
 		TSP.addActionListener(new ActionListener(){
@@ -290,13 +291,12 @@ public class GraphGUI{
 					double y = Math.random()*250+100;
 				    Graph.addNode(new Node(Counter,0,new Point3D(x,y,0),""));
 				    fixCounter(Counter);
-				    Counter++;
 				    graphComponent.repaint();
 				} catch (Exception e2) {}
 			}
 		    });
 		editnodepanel.add(addNodeButton);
-		instructions = new JLabel("set the weight in the Set weight and press enter then Select the src node.");
+		instructions = new JLabel("Set the weight in the Set weight and press enter then Select the src node.");
 		newpanel.add(instructions);
 		instructions.setVisible(false);
 		JButton addEdgeButton = new JButton("Add Edge");
@@ -339,7 +339,6 @@ public class GraphGUI{
 			    graphComponent.repaint();
 			}
 		    });
-		
 		editedgepanel.add(enterEdgeData);
 		editpanel.add(isconnected, BorderLayout.EAST);
 		editpanel.add(editnodepanel, BorderLayout.NORTH);
@@ -726,9 +725,7 @@ public class GraphGUI{
 				}
 				graphComponent.repaint();
 		    }
-		} catch (Exception e2) {
-			// TODO: handle exception
-		}
+		} catch (Exception e2) {}
 	} 
     }
     public void fixCounter(int count) {

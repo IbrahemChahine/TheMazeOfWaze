@@ -8,13 +8,13 @@ public class Edge implements edge_data, Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 8957738987340476763L;
-	private Node Src;
-	private Node Dest;
+	private node_data Src;
+	private node_data Dest;
 	private int Tag;
 	private double weight;
 	private String Info;
 	private boolean Draw;
-	public Edge(Node src, Node dest, double weight) {
+	public Edge(node_data src, node_data dest, double weight) {
 		this.Src = src;
 		this.Dest = dest;
 		this.weight = weight;
