@@ -162,7 +162,12 @@ public class Graph_Algo implements graph_algorithms, Serializable{
 
 	}
 
-	//TODO Documentation
+	/*
+	 * This method returns the shortestPath from src to dest, utilizing Dijkstra Algorithm.
+	 * @param graphNodes HashMap of the Nodes of this graph.
+	 * @param myHeap a mineHeap containing the nodes of the graph.
+	 * return the list of the shortest path from src to dest.
+	 */
 	@Override
 	public List<node_data> shortestPath(int src, int dest) {
 		//		first check if the two nodes are connected
@@ -228,7 +233,14 @@ public class Graph_Algo implements graph_algorithms, Serializable{
 		return Answer;
 	}
 	
-	class shortestPathNode{//used in TSP only
+	/*
+	 * A class used as a container for both the shortestPath list and it's weight.
+	 * @param distance weight of the path.
+	 * @param path the list of the shortestPath between the src and dest.
+	 */
+	
+	
+	class shortestPathNode{//used in TSP only. container for both shortestPath list and it's distance.
 		public double distance;
 		public List<node_data> path;
 		
@@ -348,6 +360,8 @@ public class Graph_Algo implements graph_algorithms, Serializable{
 		return answer;
 		
 	}//end TSP
+	
+	
 	//TODO Documentation 
 	public ArrayList<ArrayList<Integer>> permuteFatherMethod(int[] arr) {
 		ArrayList<ArrayList<Integer>> list = new ArrayList<>();
@@ -444,82 +458,4 @@ public class Graph_Algo implements graph_algorithms, Serializable{
 		// if graph "passes" both DFSs, it is strongly connected
 		return true;
 	}
-//	public boolean check(DGraph graph) {
-//		for(int v : graph.getNodes().keySet()) {
-//			HashMap<Integer,Boolean> visited = new HashMap<Integer,Boolean>();
-//			for (int i : graph.getNodes().keySet()) {
-//				visited.put(i, false);
-//			}
-//			DFS(graph, v, visited);
-//			for (int b: visited.keySet())
-//				if (!visited.get(b))
-//					return false;
-//		}
-//		return true;
-//	}
-//		private static Object deepCopy(Object object) {
-//		   try {
-//		     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-//		     ObjectOutputStream outputStrm = new ObjectOutputStream(outputStream);
-//		     outputStrm.writeObject(object);
-//		     ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
-//		     ObjectInputStream objInputStream = new ObjectInputStream(inputStream);
-//		     return objInputStream.readObject();
-//		   }
-//		   catch (Exception e) {
-//		     e.printStackTrace();
-//		     return null;
-//		   }
-//	 }
-
-
-//	@Override
-//	public List<node_data> TSP(List<Integer> targets) {
-//		double minimum = Double.POSITIVE_INFINITY;
-//		ArrayList<Integer> minimumNodeKeyList = new ArrayList<Integer>();
-//		HashMap<Integer, HashMap<Integer,Double>> Distances = new HashMap<Integer, HashMap<Integer,Double>>();
-//		for (int i : targets) {
-//			Distances.put(i, new HashMap<Integer,Double>()); //create a new inner HashMap for each of the targets
-//			for (int j : targets) {
-//				if(i==j) {continue;}
-//				double currentDistance = shortestPathDist(i,j);
-//				Distances.get(i).put(j, currentDistance);
-//			}
-//		}//end calculate all ShortestPath of all targets to each other
-//
-//		for (int i : targets) {
-//			int[] allTargetssBesideBeginningNode = new int[targets.size()-1];
-//			int k = 0;
-//			for (int j: targets) {
-//				if(i!=j) {//if this node isn't the beginning node
-//					allTargetssBesideBeginningNode[k]=j;
-//					k++;
-//				}
-//			}
-//			ArrayList<ArrayList<Integer>> currentPermutations = new ArrayList<ArrayList<Integer>>();
-//			currentPermutations = permuteFatherMethod(allTargetssBesideBeginningNode);
-//			for (ArrayList<Integer> specificPermutation : currentPermutations) {
-//				double currentMinimum = Distances.get(i).get(specificPermutation.get(0)); //add the 1st journey cost
-//				for (int j = 1; j < specificPermutation.size(); j++) {
-//					double addToCurrentMinimum = Distances.get(specificPermutation.get(j-1)).get(specificPermutation.get(j)); //add the next journey
-//					currentMinimum = currentMinimum + addToCurrentMinimum; //add the next journey cost to the total cost
-//				}
-//				if (currentMinimum<minimum) { //test if the now found trip is the cheapest, up till now.
-//					minimum = currentMinimum;
-//					specificPermutation.add(0, i); //add the key of the Node we begin at, to the list.
-//					minimumNodeKeyList = specificPermutation;
-//				}
-//			}//end iterate over permutations of current beginning node
-//		}//end iterate, changing beginning node.
-//		
-//		
-//		List <node_data> answer = new ArrayList<node_data>();
-//		for (int i = 0; i < minimumNodeKeyList.size(); i++) {
-//			answer.add(this.Graph.getNode(minimumNodeKeyList.get(i)));
-//		}
-//		System.out.println(minimum);
-//		System.out.println(answer.toString());
-//		return answer;
-//	}//end TSP
-	
 }
