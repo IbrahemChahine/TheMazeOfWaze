@@ -260,6 +260,15 @@ public class Graph_Algo implements graph_algorithms, Serializable{
 			return null;
 		}
 		
+		for (int i = 0; i < targets.size(); i++) {
+			try {
+				this.Graph.getNode(targets.get(i));
+			}
+			catch(Exception e) {
+				throw new RuntimeException("The targets contain a key that isn't within this graph!");
+			}
+		}
+		
 		double minimum = Double.POSITIVE_INFINITY;
 		ArrayList<Integer> targetsOrderList = new ArrayList<Integer>();
 		HashMap<Integer, HashMap<Integer,shortestPathNode>> Distances = new HashMap<Integer, HashMap<Integer,shortestPathNode>>();

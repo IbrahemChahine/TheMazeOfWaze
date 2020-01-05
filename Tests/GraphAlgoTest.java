@@ -15,7 +15,7 @@ import dataStructure.node_data;
 import utils.Point3D;
 
 class GraphAlgoTest {
-	
+
 	@Test
 	public void isConnectedTest() {
 		DGraph Graph = new DGraph();
@@ -113,22 +113,42 @@ class GraphAlgoTest {
 			fail("The weight of a node if the deepcopy shouldn't change if it was changed in the Original Graph");
 		}
 	}
-//	@Test // TODO Fix the TSP.
-//	public void TSPTest() {
-//		DGraph Graph = new DGraph();
-//		Node n1 = new Node(10,new Point3D(0,0,0),"");
-//		Node n2 = new Node(11,new Point3D(0,0,0),"");
-//		Node n3 = new Node(12,new Point3D(0,0,0),"");
-//		Graph.addNode(n1);
-//		Graph.addNode(n2);
-//		Graph.addNode(n3);
-//		Graph.connect(n1.getKey(), n3.getKey(), 1000.0);
-//		Graph.connect(n1.getKey(), n2.getKey(), 10.0);
-//		Graph.connect(n2.getKey(), n3.getKey(), 10.0);
-//		Graph_Algo Algo = new Graph_Algo();
-//		Algo.init(Graph);
-//		ArrayList<Integer> targets = new ArrayList<Integer>();
-//		
-//		List<node_data> path = Algo.TSP(targets);
-//	}
+	@Test
+	public void TSPTest() { //create a graph on which we know what TSP should return and make sure he gives that as the answer.
+		DGraph Graph = new DGraph();
+		Node n1 = new Node(10,new Point3D(0,0,0),"");
+		Node n2 = new Node(11,new Point3D(0,0,0),"");
+		Node n3 = new Node(12,new Point3D(0,0,0),"");
+		Node n4 = new Node(13,new Point3D(0,0,0),"");
+
+		Graph.addNode(n1);
+		Graph.addNode(n2);
+		Graph.addNode(n3);
+		Graph.addNode(n4);
+
+		Graph.connect(n1.getKey(), n2.getKey(), 4.0);
+		Graph.connect(n2.getKey(), n3.getKey(), 4.0);
+		Graph.connect(n3.getKey(), n4.getKey(), 3.0);
+		Graph.connect(n4.getKey(), n1.getKey(), 10.0);
+		
+		List<node_data> actualAnswer = new ArrayList<node_data>();
+		actualAnswer.add(n4);
+		actualAnswer.add(n1);
+		
+		Graph_Algo Algo = new Graph_Algo();
+		Algo.init(Graph);
+		ArrayList<Integer> testTargets = new ArrayList<Integer>();
+		testTargets.add(n1.getKey());
+		testTargets.add(n4.getKey());
+		List<node_data> path = Algo.TSP(testTargets);
+		boolean answer = true;
+		for (int i = 0; i < path.size() && answer; i++) {
+			if(((Node)path.get(i)).getKey()!=((Node)actualAnswer.get(i)).getKey()) {
+				answer = false;
+			}
+		}
+		
+		assertTrue(answer);
+
+	}
 }
