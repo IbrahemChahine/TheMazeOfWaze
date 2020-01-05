@@ -362,35 +362,6 @@ public class Graph_Algo implements graph_algorithms, Serializable{
 	}//end TSP
 	
 	
-	//TODO Documentation 
-	public ArrayList<ArrayList<Integer>> permuteFatherMethod(int[] arr) {
-		ArrayList<ArrayList<Integer>> list = new ArrayList<>();
-		permuteHelper(list, new ArrayList<>(), arr);
-		return list;
-	}
-	//TODO Documentation
-	private void permuteHelper(ArrayList<ArrayList<Integer>> list, ArrayList<Integer> resultList, int [] arr){
-		// Base case
-		if(resultList.size() == arr.length){
-			list.add(new ArrayList<>(resultList));
-		} 
-		else{
-			for(int i = 0; i < arr.length; i++){ 
-
-				if(resultList.contains(arr[i])) 
-				{
-					// If element already exists in the list then skip
-					continue; 
-				}
-				// Choose element
-				resultList.add(arr[i]);
-				// Explore
-				permuteHelper(list, resultList, arr);
-				// Unchoose element
-				resultList.remove(resultList.size() - 1);
-			}
-		}
-	}
 	public static void DFS(DGraph g, int v, HashMap<Integer,Boolean> visited) {
 		if(visited.containsKey(v)) {
 			visited.replace(v, true);
