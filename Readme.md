@@ -1,4 +1,4 @@
-# Readme
+# TheMazeOfWaze
 
 This Project is an Exercise in an object  **Object-oriented**  programming (**OOP**) course in  **Ariel university**.
 
